@@ -22,6 +22,7 @@ const stageCv = document.getElementById('scrollCanvas');
 const ctx = stageCv.getContext('2d');
 const chapters = [...document.querySelectorAll('.chapter')];
 const jpDots = [...document.querySelectorAll('.jp-dot')];
+const inkSpreadMap = document.getElementById('inkSpreadMap');
 
 const INK = '32,32,28';
 const SEAL = '154,51,36';
@@ -303,7 +304,13 @@ function layoutChapters(p) {
 
     const arrive = clamp(1 - Math.abs(t) / 0.2, 0, 1);
     const word = el.querySelector('.ch-word');
-    word.style.filter = `blur(${((1 - smooth(arrive)) * 7).toFixed(2)}px)`;
+    /* 잉크 스밈 — 도착할수록 번짐(displacement)이 잦아들며 글자가 마른다 */
+    if (arrive > 0 && arrive < 0.97) {
+      inkSpreadMap.setAttribute('scale', ((1 - smooth(arrive)) * 55).toFixed(1));
+      word.style.filter = `url(#inkSpread) blur(${((1 - smooth(arrive)) * 5).toFixed(2)}px)`;
+    } else {
+      word.style.filter = arrive >= 0.97 ? '' : `blur(${((1 - smooth(arrive)) * 7).toFixed(2)}px)`;
+    }
     word.style.transform = `scale(${lerp(0.82, 1, smooth(arrive)).toFixed(3)})`;
 
     const jamo = el.querySelectorAll('.ch-jamo span');
@@ -387,14 +394,14 @@ document.querySelectorAll('.pillars,.world-grid').forEach(group => {
 /* 히어로 패럴랙스 + 붓끝 자국 */
 const hero = document.querySelector('.hero');
 const heroMtn = document.querySelector('.hero-mtn');
-const heroEnso = document.querySelector('.hero .enso');
+const heroLogo = document.querySelector('.hero-logo');
 let lastDot = { x: -99, y: -99 };
 if (!reduceMotion) {
   addEventListener('pointermove', e => {
     if (scrollY > innerHeight) return;
     const dx = (e.clientX / innerWidth - 0.5), dy = (e.clientY / innerHeight - 0.5);
     heroMtn.style.transform = `translate(${dx * -16}px, ${dy * -6}px)`;
-    heroEnso.style.translate = `${dx * 10}px ${dy * 8}px`;
+    heroLogo.style.translate = `${dx * 8}px ${dy * 6}px`;
     /* 일정 거리마다 먹 자국 하나 */
     const d = Math.hypot(e.clientX - lastDot.x, e.clientY - lastDot.y);
     if (d > 34 && e.target.closest('.hero')) {
@@ -582,6 +589,7 @@ function complete(word) {
     const o = d.querySelector('.ord'); if (o) o.remove();
     d.classList.add('ink');
     d.removeAttribute('tabindex');
+    splatter(d);
   }, 160 + i * 130));
   setTimeout(() => {
     sel = []; busy = false;
@@ -589,6 +597,24 @@ function complete(word) {
     if (burned.size >= total) { clearEl.hidden = false; }
     else render();
   }, 160 + targets.length * 130 + 450);
+}
+/* 먹 튐 — 타는 칸 둘레로 잔먹이 튄다 */
+function splatter(cell) {
+  if (reduceMotion) return;
+  const frame = cell.closest('.demo-board-frame');
+  const fb = frame.getBoundingClientRect(), cb = cell.getBoundingClientRect();
+  const cx = cb.left - fb.left + cb.width / 2, cy = cb.top - fb.top + cb.height / 2;
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'ink-splat';
+    const ang = Math.random() * Math.PI * 2, dist = 24 + Math.random() * 34;
+    const size = 4 + Math.random() * 9;
+    s.style.cssText = `left:${cx}px; top:${cy}px; width:${size}px; height:${size}px;
+      border-radius:${40 + Math.random() * 20}% ${40 + Math.random() * 20}% ${40 + Math.random() * 20}% ${40 + Math.random() * 20}%;
+      --sx:${Math.cos(ang) * dist}px; --sy:${Math.sin(ang) * dist}px`;
+    frame.appendChild(s);
+    setTimeout(() => s.remove(), 650);
+  }
 }
 document.getElementById('demoReset').addEventListener('click', buildBoard);
 document.getElementById('demoAgain').addEventListener('click', buildBoard);
