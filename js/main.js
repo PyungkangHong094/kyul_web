@@ -80,60 +80,87 @@ const noisePat = (() => {           // 타일형 먹 얼룩 (128px)
 
 let sunCv = null, sunSize = 0, landCv = null, landCtx = null, landPattern = null;
 
-/* 주묵(朱墨) 해 — 붓으로 찍은 듯: 요철 가장자리·다우빙·갈필·얼룩 */
+/* 주홍 잉크 해 — 한지에 촤악 스며 번진 워시: 겹겹의 무른 번짐 + 섬유 잔가지 */
 function buildSun() {
   const r = Math.min(W, H) * 0.075;
-  sunSize = Math.ceil(r * 2.9);
+  sunSize = Math.ceil(r * 4.2);
   sunCv = document.createElement('canvas');
   sunCv.width = sunCv.height = Math.ceil(sunSize * DPR);
   const g = sunCv.getContext('2d');
   g.scale(DPR, DPR);
   const cx = sunSize / 2, cy = sunSize / 2;
   const rnd = seeded(555);
-  const ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, ph3 = rnd() * 6.28;
-  const edge = th => r * (1 + 0.02 * Math.sin(3 * th + ph1) + 0.012 * Math.sin(7 * th + ph2) + 0.007 * Math.sin(13 * th + ph3));
+  const blob = (rr, wob, ph1, ph2, ph3) => {
+    g.beginPath();
+    for (let i = 0; i <= 110; i++) {
+      const th = (i / 110) * Math.PI * 2;
+      const rad = rr * (1 + wob * (0.55 * Math.sin(3 * th + ph1) + 0.3 * Math.sin(5 * th + ph2) + 0.15 * Math.sin(9 * th + ph3)));
+      i === 0 ? g.moveTo(cx + Math.cos(th) * rad, cy + Math.sin(th) * rad)
+              : g.lineTo(cx + Math.cos(th) * rad, cy + Math.sin(th) * rad);
+    }
+    g.closePath();
+  };
 
-  g.beginPath();
-  for (let i = 0; i <= 120; i++) {
-    const th = (i / 120) * Math.PI * 2;
-    const rr = edge(th);
-    i === 0 ? g.moveTo(cx + Math.cos(th) * rr, cy + Math.sin(th) * rr)
-            : g.lineTo(cx + Math.cos(th) * rr, cy + Math.sin(th) * rr);
+  /* 겹겹의 워시 — 바깥일수록 크고 옅고 무르게 (젖은 번짐) */
+  const layers = [
+    { rr: 1.62, a: 0.045, wob: 0.16, blur: 0.20 },
+    { rr: 1.38, a: 0.075, wob: 0.13, blur: 0.14 },
+    { rr: 1.18, a: 0.115, wob: 0.10, blur: 0.09 },
+    { rr: 1.02, a: 0.16,  wob: 0.075, blur: 0.055 },
+    { rr: 0.88, a: 0.21,  wob: 0.055, blur: 0.035 },
+    { rr: 0.70, a: 0.24,  wob: 0.05,  blur: 0.025 },
+  ];
+  for (const L of layers) {
+    const ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, ph3 = rnd() * 6.28;
+    const warm = rnd() * 20;                          // 층마다 미묘한 색 온도차
+    g.save();
+    try { g.filter = `blur(${(r * L.blur).toFixed(1)}px)`; } catch (e) {}
+    const grad = g.createRadialGradient(cx, cy, 0, cx, cy, r * L.rr);
+    grad.addColorStop(0, `rgba(${154 + warm},${51 + warm * 0.4},36,${L.a})`);
+    grad.addColorStop(0.72, `rgba(${154 + warm},${51 + warm * 0.4},36,${L.a * 0.8})`);
+    grad.addColorStop(1, 'rgba(154,51,36,0)');
+    blob(r * L.rr, L.wob, ph1, ph2, ph3);
+    g.fillStyle = grad;
+    g.fill();
+    g.restore();
   }
-  g.closePath();
-  const base = g.createRadialGradient(cx - r * 0.18, cy - r * 0.2, r * 0.1, cx, cy, r * 1.05);
-  base.addColorStop(0, '#a63d28');
-  base.addColorStop(0.62, '#9a3324');
-  base.addColorStop(1, '#7e2a1c');       // 가장자리로 먹이 고인다
-  g.fillStyle = base; g.fill();
-  g.save(); g.clip();
-  for (let i = 0; i < 110; i++) {        // 다우빙 — 붓이 겹쳐 찍힌 얼룩
+
+  /* 섬유 잔가지 — 종이 결을 타고 삐져나간 가는 번짐 */
+  g.save();
+  try { g.filter = `blur(${(r * 0.02).toFixed(1)}px)`; } catch (e) {}
+  g.lineCap = 'round';
+  for (let i = 0; i < 48; i++) {
+    const th = rnd() * Math.PI * 2;
+    const r0 = r * (0.78 + rnd() * 0.3);
+    const len = r * (0.12 + rnd() * 0.42);
+    const bend = (rnd() - 0.5) * r * 0.22;
+    const x0 = cx + Math.cos(th) * r0, y0 = cy + Math.sin(th) * r0;
+    const x1 = cx + Math.cos(th) * (r0 + len), y1 = cy + Math.sin(th) * (r0 + len);
+    g.beginPath();
+    g.moveTo(x0, y0);
+    g.quadraticCurveTo((x0 + x1) / 2 - Math.sin(th) * bend, (y0 + y1) / 2 + Math.cos(th) * bend, x1, y1);
+    g.lineWidth = r * (0.008 + rnd() * 0.02);
+    g.strokeStyle = `rgba(154,51,36,${0.03 + rnd() * 0.06})`;
+    g.stroke();
+  }
+  g.restore();
+
+  /* 중심 얼룩 몇 점 + 한지 그레인 */
+  for (let i = 0; i < 40; i++) {
     const u = Math.sqrt(rnd()), th = rnd() * Math.PI * 2;
-    const x = cx + Math.cos(th) * u * r * 0.94, y = cy + Math.sin(th) * u * r * 0.94;
-    const br = r * (0.05 + rnd() * 0.15);
-    const dark = rnd() < 0.55;
+    const x = cx + Math.cos(th) * u * r * 0.8, y = cy + Math.sin(th) * u * r * 0.8;
+    const br = r * (0.06 + rnd() * 0.16);
     const rg2 = g.createRadialGradient(x, y, 0, x, y, br);
-    rg2.addColorStop(0, dark ? `rgba(96,24,14,${0.05 + rnd() * 0.09})` : `rgba(214,120,88,${0.04 + rnd() * 0.07})`);
+    rg2.addColorStop(0, rnd() < 0.5 ? `rgba(120,32,20,${0.03 + rnd() * 0.05})` : `rgba(206,110,80,${0.03 + rnd() * 0.04})`);
     rg2.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = rg2; g.beginPath(); g.arc(x, y, br, 0, 7); g.fill();
   }
-  g.globalCompositeOperation = 'destination-out';   // 갈필 — 마른 붓이 긁고 지나간 결
-  for (let s = 0; s < 5; s++) {
-    const y0 = cy - r + (s + 0.5 + (rnd() - 0.5) * 0.5) * (r * 2 / 5);
-    g.beginPath();
-    for (let x = cx - r * 1.1; x <= cx + r * 1.1; x += 4) {
-      const y = y0 + Math.sin(x / (14 + s * 5) + s * 3) * r * 0.03;
-      x <= cx - r * 1.1 + 4 ? g.moveTo(x, y) : g.lineTo(x, y);
-    }
-    g.lineWidth = r * (0.008 + rnd() * 0.016);
-    g.strokeStyle = `rgba(0,0,0,${0.05 + rnd() * 0.08})`;
-    g.stroke();
-  }
-  g.globalCompositeOperation = 'source-atop';       // 먹 얼룩 그레인
-  g.globalAlpha = 0.75;
+  g.globalCompositeOperation = 'source-atop';
+  g.globalAlpha = 0.6;
   g.fillStyle = g.createPattern(noisePat, 'repeat');
   g.fillRect(0, 0, sunSize, sunSize);
-  g.restore();
+  g.globalCompositeOperation = 'source-over';
+  g.globalAlpha = 1;
 }
 
 /* 능선 — 오프스크린에 그려 산 픽셀에만 먹 얼룩을 입힌다 */
@@ -531,29 +558,29 @@ addEventListener('pointerdown', e => {
 
 /* ══════════════ 3. 세계 그리드 ══════════════ */
 const WORLDS = [
-  { w: '불', g: '☲ 리(離)', d: '여명 — 첫 불씨가 어둠을 사른다' },
-  { w: '물', g: '☵ 감(坎)', d: '강이 흐르고 안개가 피어난다' },
-  { w: '빛', g: '☰ 건(乾)', d: '하늘이 트이고 빛살이 내린다' },
-  { w: '돌', g: '☶ 간(艮)', d: '산이 솟고 바위가 자리 잡는다' },
-  { w: '붓', g: '人 사람', d: '사람이 붓을 들어 세상을 긋는다' },
-  { w: '길', g: '☷ 곤(坤)', d: '오솔길이 서로를 잇는다' },
-  { w: '숨', g: '☴ 손(巽)', d: '바람이 불고 만물이 숨 쉰다' },
-  { w: '못', g: '☱ 태(兌)', d: '고요한 수면에 파문이 번진다' },
-  { w: '울', g: '☳ 진(震)', d: '우레가 하늘을 울린다' },
-  { w: '씨', g: '種 씨앗', d: '흙 속에 생명이 심긴다' },
-  { w: '싹', g: '芽 새싹', d: '잠든 씨앗이 눈을 뜬다' },
-  { w: '눈', g: '雪 · 目', d: '한 글자 두 뜻 — 덮거나, 뜨거나' },
-  { w: '끝', g: '循 순환', d: '끝은 다시 처음으로 — 준비 중', soon: true },
-  { w: '꿈', g: '夢 꿈', d: '달과 별과 구름의 밤 — 준비 중', soon: true },
-  { w: '결', g: '結 맺음', d: '마지막 단어는, 이 이름 — 준비 중', soon: true },
+  { w: '불', en: 'Fire', g: '☲ 리(離)', d: 'Dawn — the first spark sears the darkness' },
+  { w: '물', en: 'Water', g: '☵ 감(坎)', d: 'Rivers flow and mist rises' },
+  { w: '빛', en: 'Light', g: '☰ 건(乾)', d: 'The sky opens; rays pour down' },
+  { w: '돌', en: 'Stone', g: '☶ 간(艮)', d: 'Mountains rise; rocks settle in place' },
+  { w: '붓', en: 'Brush', g: '人 사람', d: 'A human lifts the brush and draws the world' },
+  { w: '길', en: 'Road', g: '☷ 곤(坤)', d: 'Paths reach out and join one another' },
+  { w: '숨', en: 'Breath', g: '☴ 손(巽)', d: 'Wind blows; all things breathe' },
+  { w: '못', en: 'Pond', g: '☱ 태(兌)', d: 'Ripples spread across still water' },
+  { w: '울', en: 'Thunder', g: '☳ 진(震)', d: 'Thunder shakes the open sky' },
+  { w: '씨', en: 'Seed', g: '種 씨앗', d: 'Life is sown deep into the soil' },
+  { w: '싹', en: 'Sprout', g: '芽 새싹', d: 'The sleeping seed opens its eyes' },
+  { w: '눈', en: 'Snow · Eye', g: '雪 · 目', d: 'One letter, two meanings — cover, or awaken' },
+  { w: '끝', en: 'End', g: '循 순환', d: 'The end returns to the beginning — coming soon', soon: true },
+  { w: '꿈', en: 'Dream', g: '夢 꿈', d: 'A night of moon, stars and clouds — coming soon', soon: true },
+  { w: '결', en: 'Kyul', g: '結 맺음', d: 'The last word is this very name — coming soon', soon: true },
 ];
-const NUM = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五'];
 document.getElementById('worldGrid').innerHTML = WORLDS.map((o, i) => `
   <div class="wcard${o.soon ? ' locked' : ''} reveal">
-    ${o.soon ? '<span class="w-soon">근일</span>' : ''}
-    <p class="w-no">제${NUM[i]}계</p>
+    ${o.soon ? '<span class="w-soon">soon</span>' : ''}
+    <p class="w-no">World ${i + 1}</p>
     <p class="w-gua">${o.g}</p>
     <p class="w-word">${o.w}</p>
+    <p class="w-en">${o.en}</p>
     <p class="w-desc">${o.d}</p>
   </div>`).join('');
 document.querySelectorAll('.world-grid .reveal').forEach((el, i) => {
@@ -570,8 +597,8 @@ const LAYOUT = [
   ['ㅂ', 'ㅜ', 'ㄹ', null],
 ];
 const WORD_DEFS = {
-  'ㅁㅜㄹ': { syll: '물', meaning: '물 수(水) — 곁의 노이즈를 씻어냅니다', extra: [[0, 2]] },
-  'ㅂㅜㄹ': { syll: '불', meaning: '불 화(火) — 남은 노이즈를 태웁니다', extra: [[1, 3], [2, 2]] },
+  'ㅁㅜㄹ': { syll: '물', meaning: 'water 水 — washes away the noise beside it', extra: [[0, 2]] },
+  'ㅂㅜㄹ': { syll: '불', meaning: 'fire 火 — burns the remaining noise', extra: [[1, 3], [2, 2]] },
 };
 
 const board = document.getElementById('demoBoard');

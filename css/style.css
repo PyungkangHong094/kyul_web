@@ -154,8 +154,10 @@ body{
 @keyframes hj-in{from{opacity:0; transform:translateY(-16px); filter:blur(4px)} to{opacity:.75; transform:none; filter:blur(0)}}
 
 .hero-title{line-height:0; margin:-6px 0}
-.hero-sub{font-size:clamp(17px,2.6vw,22px); letter-spacing:.34em; padding-left:.34em; color:var(--ink-soft);
+.hero-sub{font-size:clamp(17px,2.6vw,22px); letter-spacing:.12em; color:var(--ink-soft);
   animation:fade-up .9s ease 1.7s both}
+.hero-sub-ko{font-size:clamp(12.5px,1.7vw,15px); letter-spacing:.34em; padding-left:.34em; color:var(--ink-faint);
+  margin-top:-6px; animation:fade-up .9s ease 1.85s both}
 .hero-line{font-size:clamp(14px,2vw,16.5px); color:var(--ink-faint); letter-spacing:.06em; animation:fade-up .9s ease 2s both}
 .hero-line em{font-style:normal; color:var(--seal); font-weight:700}
 .hero-actions{display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; justify-content:center; animation:fade-up .9s ease 2.3s both}
@@ -194,8 +196,10 @@ body{
 .ch-jamo span{display:inline-block}
 .ch-word{font-family:var(--brush); font-size:clamp(90px,15vw,160px); font-weight:400; line-height:1.12;
   text-shadow:0 0 1px rgba(32,32,28,.4), 1px 1px 0 rgba(32,32,28,.15)}
-.ch-poem{margin-top:14px; font-size:clamp(14.5px,2vw,17.5px); line-height:1.9; color:var(--ink-soft); letter-spacing:.05em}
+.ch-en{margin-top:2px; font-size:12.5px; letter-spacing:.5em; padding-left:.5em; text-transform:uppercase; color:var(--seal); opacity:.8}
+.ch-poem{margin-top:12px; font-size:clamp(14.5px,2vw,17.5px); line-height:1.9; color:var(--ink-soft); letter-spacing:.03em}
 .ch-poem span{display:block}
+.ch-poem .ko{font-size:.72em; color:var(--ink-faint); letter-spacing:.1em; margin-top:8px}
 .ch-stamp{margin-top:22px; width:40px; height:40px; font-size:20px; transform:rotate(-3deg)}
 .ch-word-logo{line-height:0}
 .ch-word-logo img{width:clamp(230px,38vw,390px); height:auto}
@@ -223,6 +227,7 @@ section{position:relative}
 .sec-head h2 em{font-style:normal; position:relative; white-space:nowrap}
 .sec-head h2 em::after{content:''; position:absolute; left:-2%; right:-2%; bottom:4px; height:9px;
   background:rgba(154,51,36,.22); z-index:-1; border-radius:2px}
+.ko-sub{margin-top:10px; font-size:13px; letter-spacing:.3em; padding-left:.3em; color:var(--ink-faint)}
 .sec-desc{margin-top:18px; font-size:15.5px; line-height:1.95; color:var(--ink-soft)}
 .sec-desc strong{color:var(--seal)}
 
@@ -318,8 +323,10 @@ section{position:relative}
 .wcard>*{position:relative; z-index:1; transition:color .35s}
 .wcard .w-no{font-size:10px; letter-spacing:.2em; color:var(--ink-faint); margin-bottom:6px}
 .wcard .w-gua{font-size:15px; color:var(--ink-faint); letter-spacing:.1em; height:20px}
-.wcard .w-word{font-family:var(--brush); font-size:52px; font-weight:400; line-height:1.25; margin:2px 0 8px;
+.wcard .w-word{font-family:var(--brush); font-size:52px; font-weight:400; line-height:1.2; margin:2px 0 0;
   text-shadow:0 0 1px rgba(32,32,28,.35)}
+.wcard .w-en{font-size:11px; letter-spacing:.34em; padding-left:.34em; text-transform:uppercase; color:var(--seal); opacity:.85; margin:2px 0 8px}
+.wcard:hover .w-en{color:rgba(239,234,224,.8)}
 .wcard .w-desc{font-size:12.5px; line-height:1.7; color:var(--ink-soft); letter-spacing:.02em}
 .wcard:hover .w-word{color:var(--paper-hi); text-shadow:none}
 .wcard:hover .w-no,.wcard:hover .w-gua{color:rgba(239,234,224,.6)}
