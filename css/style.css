@@ -1,0 +1,292 @@
+/* ─────────────────────────────────────────────
+   「결」 랜딩 — 수묵 두루마리
+   팔레트: 한지 + 먹 + 낙관 주홍 (게임 정본과 동일)
+   ───────────────────────────────────────────── */
+:root{
+  --paper:#e7e2d6; --paper-hi:#efeae0; --paper-lo:#ddd6c6; --paper-deep:#d8d1c1;
+  --ink:#20201c; --ink-soft:#403c34; --ink-faint:#6f6a60;
+  --line:rgba(32,32,28,.20); --line-bold:rgba(32,32,28,.42);
+  --seal:#9a3324;
+  --serif:"Nanum Myeongjo","Batang","AppleMyungjo","Songti SC",serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(130% 90% at 50% 0%, var(--paper-hi), transparent 55%),
+    radial-gradient(140% 120% at 88% 100%, var(--paper-lo), transparent 55%),
+    var(--paper);
+  font-family:var(--serif); color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  word-break:keep-all;
+}
+::selection{background:var(--ink); color:var(--paper-hi)}
+
+/* 한지 섬유 질감 — 전면 고정 오버레이 */
+.grain{
+  position:fixed; inset:0; z-index:80; pointer-events:none;
+  opacity:.5; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+}
+
+/* ── 공통 부품 ─────────────────────────── */
+.seal{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:46px; height:46px; background:var(--seal); color:var(--paper-hi);
+  font-size:24px; font-weight:800; border-radius:4px;
+  box-shadow:0 2px 8px rgba(154,51,36,.35);
+}
+.seal-sm{width:34px; height:34px; font-size:17px}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:15px; color:var(--ink);
+  background:transparent; border:1px solid var(--line-bold);
+  padding:13px 26px; border-radius:3px; cursor:pointer;
+  text-decoration:none; letter-spacing:.08em;
+  transition:background .18s, color .18s, transform .18s;
+}
+.btn:hover{background:rgba(32,32,28,.07)}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--ink); color:var(--paper-hi); border-color:var(--ink); letter-spacing:.22em; padding-left:30px}
+.btn-primary:hover{background:#0c0c07}
+.btn-big{font-size:17px; padding:17px 40px}
+
+.enso{width:150px; height:150px; color:var(--ink); opacity:.09}
+.enso-sm{width:90px; height:90px; opacity:.14}
+
+/* 스크롤 리빌 — 먹이 스미듯 */
+.reveal{opacity:0; transform:translateY(26px) scale(.985); filter:blur(5px);
+  transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.25,1), filter .9s ease}
+.reveal.in{opacity:1; transform:none; filter:blur(0)}
+
+/* ── 내비 ─────────────────────────────── */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:70;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px clamp(18px,4vw,44px);
+  transition:background .3s, box-shadow .3s, backdrop-filter .3s;
+}
+.nav.scrolled{background:rgba(239,234,224,.82); backdrop-filter:blur(8px); box-shadow:0 1px 0 var(--line)}
+.nav-seal{
+  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  background:var(--seal); color:var(--paper-hi); font-weight:800; font-size:19px;
+  border-radius:4px; text-decoration:none;
+}
+.nav-links{display:flex; align-items:center; gap:clamp(14px,3vw,30px)}
+.nav-links a{color:var(--ink-soft); text-decoration:none; font-size:14.5px; letter-spacing:.14em; padding:6px 2px; border-bottom:1px solid transparent; transition:color .18s,border-color .18s}
+.nav-links a:hover{color:var(--ink); border-color:var(--line-bold)}
+.nav-links .nav-cta{color:var(--seal); font-weight:700}
+.nav-links .nav-cta:hover{border-color:var(--seal)}
+
+/* ── 1. 히어로 ────────────────────────── */
+.hero{
+  position:relative; min-height:100svh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:90px 20px 70px; overflow:hidden;
+}
+.hero-mtn{
+  position:absolute; inset:auto 0 0 0; height:38%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300' preserveAspectRatio='none'%3E%3Cpath d='M0 300 L0 190 Q150 60 320 170 T640 150 T940 185 T1200 150 L1200 300 Z' fill='%2320201c' fill-opacity='0.06'/%3E%3Cpath d='M0 300 L0 235 Q220 150 430 215 T820 225 T1200 235 L1200 300 Z' fill='%2320201c' fill-opacity='0.05'/%3E%3C/svg%3E");
+  background-size:100% 100%; pointer-events:none;
+  will-change:transform;
+}
+.hero .enso{position:absolute; top:calc(50% - 210px); left:50%; transform:translateX(-50%); width:300px; height:300px;
+  animation:enso-drift 14s ease-in-out infinite}
+@keyframes enso-drift{0%,100%{transform:translateX(-50%) rotate(-2deg)}50%{transform:translateX(-50%) rotate(3deg)}}
+
+.hero-inner{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:14px}
+.hero-jamo{display:flex; gap:26px; font-size:clamp(20px,3vw,26px); color:var(--ink-faint); font-weight:700; height:30px}
+.hj{opacity:0; animation:hj-in .7s cubic-bezier(.2,.7,.25,1) forwards}
+.hj[data-d="1"]{animation-delay:.15s}
+.hj[data-d="2"]{animation-delay:.4s}
+.hj[data-d="3"]{animation-delay:.65s}
+@keyframes hj-in{from{opacity:0; transform:translateY(-16px); filter:blur(4px)} to{opacity:.75; transform:none; filter:blur(0)}}
+
+.hero-title{font-size:clamp(110px,22vw,210px); line-height:1; font-weight:800; letter-spacing:-.02em}
+.ink-reveal{display:inline-block; animation:ink-bloom 1.3s cubic-bezier(.2,.7,.25,1) .9s both;
+  text-shadow:0 0 1px rgba(32,32,28,.4), 1px 1px 0 rgba(32,32,28,.16)}
+@keyframes ink-bloom{
+  from{transform:scale(.32); filter:blur(14px); opacity:0}
+  55%{transform:scale(1.06); filter:blur(2px); opacity:1}
+  to{transform:scale(1); filter:blur(0); opacity:1}
+}
+.hero-sub{font-size:clamp(17px,2.6vw,22px); letter-spacing:.34em; padding-left:.34em; color:var(--ink-soft);
+  animation:fade-up .9s ease 1.7s both}
+.hero-line{font-size:clamp(14px,2vw,16.5px); color:var(--ink-faint); letter-spacing:.06em; animation:fade-up .9s ease 2s both}
+.hero-line em{font-style:normal; color:var(--seal); font-weight:700}
+.hero-actions{display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; justify-content:center; animation:fade-up .9s ease 2.3s both}
+@keyframes fade-up{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+
+.hero-seal{position:absolute; right:clamp(20px,7vw,90px); bottom:clamp(88px,14vh,150px); z-index:2;
+  animation:seal-stamp .5s cubic-bezier(.2,.7,.3,1.4) 2.7s both}
+@keyframes seal-stamp{from{opacity:0; transform:scale(2.4) rotate(-8deg)} 70%{opacity:1; transform:scale(.94)} to{opacity:1; transform:scale(1) rotate(-3deg)}}
+
+.scroll-hint{position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px; z-index:2; animation:fade-up 1s ease 3.1s both}
+.scroll-hint-line{width:1px; height:46px; background:var(--line-bold); position:relative; overflow:hidden}
+.scroll-hint-line::after{content:''; position:absolute; left:0; top:-40%; width:100%; height:40%;
+  background:var(--ink); animation:hint-flow 2s ease-in-out infinite}
+@keyframes hint-flow{to{top:110%}}
+.scroll-hint-txt{font-size:11.5px; letter-spacing:.3em; padding-left:.3em; color:var(--ink-faint)}
+
+/* ── 2. 두루마리 여정 ─────────────────── */
+.journey{position:relative; height:620vh; background:var(--paper)}
+.journey-stage{position:sticky; top:0; height:100svh; overflow:hidden}
+#scrollCanvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+
+.journey-chapters{position:absolute; inset:0; pointer-events:none}
+.chapter{
+  position:absolute; left:50%; top:44%; transform:translate(-50%,-50%);
+  text-align:center; width:min(560px,86vw);
+  opacity:0; visibility:hidden;
+}
+.ch-jamo{display:flex; justify-content:center; font-size:clamp(19px,2.6vw,25px); font-weight:700; color:var(--ink-faint); height:32px}
+.ch-jamo span{display:inline-block}
+.ch-word{font-size:clamp(84px,14vw,150px); font-weight:800; line-height:1.12;
+  text-shadow:0 0 1px rgba(32,32,28,.4), 1px 1px 0 rgba(32,32,28,.15)}
+.ch-poem{margin-top:14px; font-size:clamp(14.5px,2vw,17.5px); line-height:1.9; color:var(--ink-soft); letter-spacing:.05em}
+.ch-seal{margin-top:20px}
+.chapter-final .ch-word{color:var(--seal); text-shadow:0 0 1px rgba(154,51,36,.4)}
+
+.journey-progress{position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  width:min(300px,60vw); height:2px; background:var(--line); border-radius:1px; overflow:hidden}
+.journey-progress i{display:block; width:0; height:100%; background:var(--ink); transition:none}
+
+/* ── 섹션 공통 헤더 ────────────────────── */
+section{position:relative}
+.play,.worlds{padding:clamp(90px,14vh,150px) clamp(20px,6vw,72px)}
+.sec-head{max-width:660px; margin:0 auto 54px; text-align:center}
+.sec-kicker{font-size:12.5px; letter-spacing:.44em; padding-left:.44em; color:var(--seal); font-weight:700; margin-bottom:16px}
+.sec-head h2{font-size:clamp(27px,4.6vw,40px); font-weight:800; line-height:1.42; letter-spacing:.02em}
+.sec-head h2 em{font-style:normal; position:relative; white-space:nowrap}
+.sec-head h2 em::after{content:''; position:absolute; left:-2%; right:-2%; bottom:4px; height:9px;
+  background:rgba(154,51,36,.22); z-index:-1; border-radius:2px}
+.sec-desc{margin-top:18px; font-size:15.5px; line-height:1.95; color:var(--ink-soft)}
+.sec-desc strong{color:var(--seal)}
+
+/* ── 3. 데모 ──────────────────────────── */
+.demo-wrap{display:flex; gap:clamp(26px,5vw,64px); align-items:center; justify-content:center; flex-wrap:wrap; max-width:980px; margin:0 auto}
+.demo-board-frame{position:relative; padding:16px; background:rgba(255,255,255,.16); border:1px solid var(--line); border-radius:6px;
+  box-shadow:0 18px 50px rgba(20,16,8,.10)}
+.demo-board{display:grid; grid-template-columns:repeat(4, var(--dcell,72px)); gap:8px; --dcell:clamp(56px,13vw,76px)}
+.dcell{
+  width:var(--dcell); height:var(--dcell); position:relative;
+  display:flex; align-items:center; justify-content:center; user-select:none;
+  -webkit-tap-highlight-color:transparent; border:1px solid transparent; border-radius:3px;
+  font-size:calc(var(--dcell)*.5); font-weight:800; color:var(--ink);
+  text-shadow:0 0 1px rgba(32,32,28,.4), .5px .5px 0 rgba(32,32,28,.18);
+}
+.dcell.glyph{background:linear-gradient(160deg,rgba(255,255,255,.5),rgba(221,214,198,.35)); border-color:var(--line-bold); cursor:pointer;
+  box-shadow:0 3px 0 rgba(32,32,28,.13), 0 4px 6px rgba(32,32,28,.08); transition:transform .12s}
+.dcell.glyph:hover{transform:translateY(-2px)}
+.dcell.glyph:active{transform:scale(.94)}
+.dcell.sel{border-color:var(--seal); box-shadow:0 0 0 2px rgba(154,51,36,.55) inset, 0 3px 0 rgba(32,32,28,.13)}
+.dcell .ord{position:absolute; top:3px; left:6px; font-size:11px; color:var(--seal); font-weight:700; text-shadow:none}
+.dcell.ink{
+  cursor:default; color:transparent; border-color:transparent;
+  background:radial-gradient(60% 60% at 42% 38%, #2c2b25, #18180f 70%, #0c0c07);
+  box-shadow:0 0 10px rgba(20,18,10,.35), 0 0 16px 4px rgba(24,22,12,.22), 0 1px 2px rgba(0,0,0,.3);
+  animation:cell-bloom .55s cubic-bezier(.2,.7,.25,1) both;
+}
+@keyframes cell-bloom{from{transform:scale(.28); filter:blur(2.5px); opacity:0}
+  62%{transform:scale(1.07); filter:blur(.7px); opacity:1} to{transform:scale(1); filter:blur(0); opacity:1}}
+.dcell.shake{animation:cell-shake .3s ease}
+@keyframes cell-shake{0%,100%{transform:translateX(0)} 30%{transform:translateX(-4px)} 60%{transform:translateX(4px)}}
+
+.demo-clear{position:absolute; inset:0; z-index:5; border-radius:6px;
+  background:rgba(231,226,214,.92); backdrop-filter:blur(3px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  animation:fade .45s ease both}
+@keyframes fade{from{opacity:0} to{opacity:1}}
+.demo-clear[hidden]{display:none}
+.demo-clear-syll{font-size:64px; font-weight:800}
+.demo-clear-msg{font-size:14px; letter-spacing:.3em; padding-left:.3em; color:var(--ink-soft)}
+
+.demo-side{display:flex; flex-direction:column; gap:20px; width:min(340px,90vw)}
+.demo-composer{text-align:center; padding:18px 12px; border:1px solid var(--line); border-radius:4px; background:rgba(255,255,255,.18)}
+.demo-path{font-size:38px; font-weight:800; line-height:1; min-height:40px}
+.demo-path.empty{color:var(--line-bold); font-size:26px; padding-top:7px}
+.demo-meaning{margin-top:8px; font-size:13px; color:var(--seal); letter-spacing:.12em; min-height:17px}
+.demo-hints{list-style:none; display:flex; flex-direction:column; gap:10px}
+.demo-hints li{font-size:14px; line-height:1.75; color:var(--ink-soft); padding-left:18px; position:relative}
+.demo-hints li::before{content:''; position:absolute; left:0; top:.62em; width:7px; height:7px; border-radius:50%; background:var(--ink); opacity:.35}
+.demo-hints b{color:var(--ink); font-weight:800}
+
+/* ── 4. 세계 그리드 ───────────────────── */
+.worlds{background:
+  radial-gradient(120% 90% at 50% 0%, var(--paper-hi), transparent 60%),
+  var(--paper)}
+.world-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; max-width:1060px; margin:0 auto}
+.wcard{
+  position:relative; padding:24px 16px 20px; text-align:center;
+  background:linear-gradient(160deg,rgba(255,255,255,.42),rgba(221,214,198,.3));
+  border:1px solid var(--line-bold); border-radius:4px; cursor:default; overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.7,.25,1);
+}
+.wcard::before{ /* 먹 번짐 — hover 시 차오른다 */
+  content:''; position:absolute; left:50%; top:58%; width:20px; height:20px; border-radius:50%;
+  background:radial-gradient(60% 60% at 42% 38%, #2c2b25, #18180f 70%, #0c0c07);
+  transform:translate(-50%,-50%) scale(0); transition:transform .5s cubic-bezier(.3,.6,.3,1); z-index:0;
+}
+.wcard:hover{transform:translateY(-4px)}
+.wcard:hover::before{transform:translate(-50%,-50%) scale(16)}
+.wcard>*{position:relative; z-index:1; transition:color .35s}
+.wcard .w-gua{font-size:15px; color:var(--ink-faint); letter-spacing:.1em; height:20px}
+.wcard .w-word{font-size:46px; font-weight:800; line-height:1.25; margin:2px 0 8px;
+  text-shadow:0 0 1px rgba(32,32,28,.35)}
+.wcard .w-desc{font-size:12.5px; line-height:1.7; color:var(--ink-soft); letter-spacing:.02em}
+.wcard:hover .w-word{color:var(--paper-hi); text-shadow:none}
+.wcard:hover .w-gua{color:rgba(239,234,224,.6)}
+.wcard:hover .w-desc{color:rgba(239,234,224,.75)}
+.wcard.locked .w-word{opacity:.35}
+.wcard.locked .w-desc{opacity:.6}
+.wcard .w-soon{position:absolute; top:9px; right:9px; z-index:1; font-size:10px; letter-spacing:.14em;
+  color:var(--seal); border:1px solid rgba(154,51,36,.45); border-radius:2px; padding:2px 6px}
+
+/* ── 5. 세 기둥 ───────────────────────── */
+.pillars{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:clamp(18px,3vw,34px);
+  max-width:1020px; margin:0 auto; padding:clamp(70px,10vh,120px) clamp(20px,6vw,72px)}
+.pillar{text-align:center; padding:36px 26px; border:1px solid var(--line); border-radius:4px;
+  background:rgba(255,255,255,.14)}
+.pillar-sym{font-size:44px; color:var(--seal); opacity:.85; margin-bottom:14px; font-weight:700}
+.pillar h3{font-size:20px; font-weight:800; letter-spacing:.14em; margin-bottom:14px}
+.pillar p{font-size:14px; line-height:1.95; color:var(--ink-soft); text-align:left}
+.pillar p b{color:var(--ink)}
+
+/* ── 6. 종 — CTA ─────────────────────── */
+.outro{
+  position:relative; text-align:center; padding:clamp(90px,14vh,150px) 20px 46px;
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+  background:
+    radial-gradient(120% 100% at 50% 100%, var(--paper-deep), transparent 65%),
+    var(--paper);
+}
+.outro-title{font-size:clamp(30px,5.4vw,48px); font-weight:800; line-height:1.5; letter-spacing:.03em}
+.outro-soon{font-size:13.5px; letter-spacing:.2em; color:var(--ink-faint)}
+.outro-foot{margin-top:52px; display:flex; flex-direction:column; align-items:center; gap:14px}
+.outro-foot p{font-size:12px; letter-spacing:.16em; color:var(--ink-faint)}
+.outro .enso-sm{position:absolute; top:44px; left:50%; transform:translateX(-50%)}
+
+/* 클릭 먹 파문 */
+.ink-ripple{
+  position:fixed; z-index:75; pointer-events:none; border-radius:50%;
+  border:2px solid rgba(32,32,28,.4); transform:translate(-50%,-50%) scale(0);
+  animation:ripple .7s ease-out forwards; mix-blend-mode:multiply;
+}
+@keyframes ripple{to{transform:translate(-50%,-50%) scale(1); opacity:0}}
+
+/* ── 반응형·접근성 ────────────────────── */
+@media (max-width:640px){
+  .nav-links a:not(.nav-cta){display:none}
+  .hero-seal{right:18px; bottom:110px; width:38px; height:38px; font-size:19px}
+  .demo-wrap{gap:30px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01s !important; animation-delay:0s !important; transition-duration:.01s !important}
+  .reveal{opacity:1; transform:none; filter:none}
+}

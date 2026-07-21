@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#e7e2d6" />
+<title>결 — 말로 세상을 빚는 한글 퍼즐</title>
+<meta name="description" content="한글 자모를 이어 단어를 만들고, 그 뜻대로 판을 비우는 수묵 퍼즐. 12개의 세계, 144개의 마당." />
+<meta property="og:title" content="결 — 말로 세상을 빚는 한글 퍼즐" />
+<meta property="og:description" content="말로 세상을 빚고, 마지막에 글자를 만든다. 수묵 두루마리 위의 한글 논리 퍼즐." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%239a3324'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='serif' font-weight='800' font-size='38' fill='%23efeae0'%3E결%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- 한지 섬유 질감 -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- 상단 내비 -->
+<nav class="nav" id="nav">
+  <a class="nav-seal" href="#top" aria-label="결 홈">결</a>
+  <div class="nav-links">
+    <a href="#journey">이야기</a>
+    <a href="#play">놀이법</a>
+    <a href="#worlds">세계</a>
+    <a class="nav-cta" href="https://gul-lok.vercel.app" target="_blank" rel="noopener">플레이</a>
+  </div>
+</nav>
+
+<!-- ─────────── 1. 서(序) — 히어로 ─────────── -->
+<header class="hero" id="top">
+  <div class="hero-layer hero-mtn" aria-hidden="true"></div>
+  <svg class="enso" viewBox="0 0 200 200" aria-hidden="true">
+    <path d="M100 18 C 150 18, 184 55, 184 100 C 184 148, 146 183, 99 183 C 53 183, 17 147, 17 101 C 17 58, 48 24, 88 19"
+          fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+  </svg>
+  <div class="hero-inner">
+    <p class="hero-jamo" aria-hidden="true">
+      <span class="hj" data-d="1">ㄱ</span><span class="hj" data-d="2">ㅕ</span><span class="hj" data-d="3">ㄹ</span>
+    </p>
+    <h1 class="hero-title"><span class="ink-reveal">결</span></h1>
+    <p class="hero-sub">말로 세상을 빚는 한글 퍼즐</p>
+    <p class="hero-line">단어를 깨우치면, 그 <em>뜻대로</em> 세상이 움직인다</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://gul-lok.vercel.app" target="_blank" rel="noopener">지금 플레이</a>
+      <a class="btn" href="#journey">두루마리 펼치기</a>
+    </div>
+  </div>
+  <span class="seal hero-seal" aria-hidden="true">결</span>
+  <div class="scroll-hint" aria-hidden="true">
+    <span class="scroll-hint-line"></span>
+    <span class="scroll-hint-txt">아래로 흘러가세요</span>
+  </div>
+</header>
+
+<!-- ─────────── 2. 두루마리 — 스크롤 스크럽 여정 ─────────── -->
+<section class="journey" id="journey" aria-label="창세 두루마리">
+  <div class="journey-stage">
+    <canvas id="scrollCanvas"></canvas>
+    <div class="journey-chapters">
+      <!-- 각 장은 JS가 진행률에 따라 나타냈다 사라지게 한다 -->
+      <div class="chapter" data-i="0">
+        <p class="ch-jamo"><span>ㅂ</span><span>ㅜ</span><span>ㄹ</span></p>
+        <p class="ch-word">불</p>
+        <p class="ch-poem">어둠뿐인 종이 위에<br/>첫 불씨가 당겨졌다</p>
+      </div>
+      <div class="chapter" data-i="1">
+        <p class="ch-jamo"><span>ㅁ</span><span>ㅜ</span><span>ㄹ</span></p>
+        <p class="ch-word">물</p>
+        <p class="ch-poem">강이 흐르고<br/>안개가 골을 메웠다</p>
+      </div>
+      <div class="chapter" data-i="2">
+        <p class="ch-jamo"><span>ㅂ</span><span>ㅣ</span><span>ㅊ</span></p>
+        <p class="ch-word">빛</p>
+        <p class="ch-poem">하늘이 트이고<br/>빛살이 내려앉았다</p>
+      </div>
+      <div class="chapter" data-i="3">
+        <p class="ch-jamo"><span>ㄷ</span><span>ㅗ</span><span>ㄹ</span></p>
+        <p class="ch-word">돌</p>
+        <p class="ch-poem">산이 솟고<br/>바위가 자리를 잡았다</p>
+      </div>
+      <div class="chapter" data-i="4">
+        <p class="ch-jamo"><span>ㅅ</span><span>ㅜ</span><span>ㅁ</span></p>
+        <p class="ch-word">숨</p>
+        <p class="ch-poem">바람이 불어<br/>만물이 숨을 쉬었다</p>
+      </div>
+      <div class="chapter chapter-final" data-i="5">
+        <p class="ch-jamo"><span>ㄱ</span><span>ㅕ</span><span>ㄹ</span></p>
+        <p class="ch-word">결</p>
+        <p class="ch-poem">그리고 마지막에,<br/>세상의 결이 글자가 되었다</p>
+        <span class="seal ch-seal">결</span>
+      </div>
+    </div>
+    <div class="journey-progress" aria-hidden="true"><i id="journeyBar"></i></div>
+  </div>
+</section>
+
+<!-- ─────────── 3. 놀이법 — 인터랙티브 데모 ─────────── -->
+<section class="play" id="play">
+  <div class="sec-head reveal">
+    <p class="sec-kicker">놀이법 · 遊</p>
+    <h2>붙은 자모를 <em>일자</em>로 이어<br/>단어를 만드세요</h2>
+    <p class="sec-desc">단어가 완성되면 그 칸이 먹으로 타오르고, 단어의 <strong>뜻</strong>이 판 위에 실제로 일어납니다.
+      물은 씻어내고, 불은 태웁니다. 모든 칸을 비우면 한 마당이 끝납니다.</p>
+  </div>
+
+  <div class="demo-wrap reveal">
+    <div class="demo-board-frame">
+      <div class="demo-board" id="demoBoard" role="group" aria-label="퍼즐 데모"></div>
+      <div class="demo-clear" id="demoClear" hidden>
+        <p class="demo-clear-syll">結</p>
+        <p class="demo-clear-msg">한 마당 클리어</p>
+        <span class="seal">결</span>
+        <button class="btn" id="demoAgain">다시 놀기</button>
+      </div>
+    </div>
+    <div class="demo-side">
+      <div class="demo-composer">
+        <p class="demo-path empty" id="demoPath">·&nbsp;·&nbsp;·</p>
+        <p class="demo-meaning" id="demoMeaning">&nbsp;</p>
+      </div>
+      <ul class="demo-hints">
+        <li><b>물</b> — 세로로 흐릅니다. 완성되면 곁의 노이즈를 씻어냅니다.</li>
+        <li><b>불</b> — 가로로 타오릅니다. 남은 노이즈를 태웁니다.</li>
+        <li>단어가 아닌 글자(노이즈)를 가려내는 것이 핵심.</li>
+      </ul>
+      <button class="btn" id="demoReset">↺ 처음부터</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 4. 세계 — 12월드 ─────────── -->
+<section class="worlds" id="worlds">
+  <div class="sec-head reveal">
+    <p class="sec-kicker">세계 · 界</p>
+    <h2>열두 개의 세계, <em>백사십사</em> 개의 마당</h2>
+    <p class="sec-desc">팔괘(八卦)의 골격 위에 창세의 이야기가 놓입니다. 한 세계를 비울 때마다 두루마리에 그림이 한 폭씩 더해집니다.</p>
+  </div>
+  <div class="world-grid reveal" id="worldGrid"></div>
+</section>
+
+<!-- ─────────── 5. 결(結) — 세 기둥 ─────────── -->
+<section class="pillars">
+  <div class="pillar reveal">
+    <p class="pillar-sym">意</p>
+    <h3>뜻이 곧 힘</h3>
+    <p>의미 없는 기호가 아니라 <b>진짜 한국어</b>. 단어를 깨우치면 그 뜻 그대로 판이 반응합니다 — 물은 적시고, 씨는 싹트고, 눈(雪)은 덮습니다.</p>
+  </div>
+  <div class="pillar reveal">
+    <p class="pillar-sym">墨</p>
+    <h3>수묵의 감각</h3>
+    <p>한지 위의 먹과 낙관 주홍, 단 두 색. 푸는 행위가 곧 붓질이 되어, 마당을 비울 때마다 산수화 한 폭이 그려집니다.</p>
+  </div>
+  <div class="pillar reveal">
+    <p class="pillar-sym">☰</p>
+    <h3>팔괘의 여정</h3>
+    <p>불☲ 물☵ 빛☰ 돌☶ … 여덟 괘를 따라 세상이 창조되고, 다 깬 뒤 돌아보면 여덟 괘가 완성되어 있습니다.</p>
+  </div>
+</section>
+
+<!-- ─────────── 6. 종(終) — CTA ─────────── -->
+<footer class="outro" id="outro">
+  <svg class="enso enso-sm" viewBox="0 0 200 200" aria-hidden="true">
+    <path d="M100 18 C 150 18, 184 55, 184 100 C 184 148, 146 183, 99 183 C 53 183, 17 147, 17 101 C 17 58, 48 24, 88 19"
+          fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+  </svg>
+  <h2 class="outro-title reveal">이제, 첫 획을<br/>그어 보세요</h2>
+  <div class="hero-actions reveal">
+    <a class="btn btn-primary btn-big" href="https://gul-lok.vercel.app" target="_blank" rel="noopener">웹에서 바로 플레이</a>
+  </div>
+  <p class="outro-soon reveal">iOS · Android 앱 — 붓을 갈고 있습니다</p>
+  <div class="outro-foot">
+    <span class="seal seal-sm">결</span>
+    <p>© 2026 「결」 — 한글 단어 퍼즐</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
