@@ -58,12 +58,145 @@ const EMBERS = Array.from({ length: 16 }, () => ({
   phase: emberRnd(), size: 1.2 + emberRnd() * 2.2, wob: 2 + emberRnd() * 5,
 }));
 
+/* ── 먹 질감 — 얼룩 패턴 + 주묵 해 + 산 텍스처 오프스크린 ── */
+const noisePat = (() => {           // 타일형 먹 얼룩 (128px)
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const rnd = seeded(999);
+  for (let i = 0; i < 1100; i++) {
+    g.fillStyle = `rgba(32,32,28,${(rnd() * 0.10).toFixed(3)})`;
+    const s = 0.8 + rnd() * 2.4;
+    g.fillRect(rnd() * 128, rnd() * 128, s, s);
+  }
+  for (let i = 0; i < 26; i++) {    // 큼직한 옅은 얼룩
+    const x = rnd() * 128, y = rnd() * 128, r = 6 + rnd() * 16;
+    const rg = g.createRadialGradient(x, y, 0, x, y, r);
+    rg.addColorStop(0, `rgba(32,32,28,${(rnd() * 0.05).toFixed(3)})`);
+    rg.addColorStop(1, 'rgba(32,32,28,0)');
+    g.fillStyle = rg; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  }
+  return c;
+})();
+
+let sunCv = null, sunSize = 0, landCv = null, landCtx = null, landPattern = null;
+
+/* 주묵(朱墨) 해 — 붓으로 찍은 듯: 요철 가장자리·다우빙·갈필·얼룩 */
+function buildSun() {
+  const r = Math.min(W, H) * 0.075;
+  sunSize = Math.ceil(r * 2.9);
+  sunCv = document.createElement('canvas');
+  sunCv.width = sunCv.height = Math.ceil(sunSize * DPR);
+  const g = sunCv.getContext('2d');
+  g.scale(DPR, DPR);
+  const cx = sunSize / 2, cy = sunSize / 2;
+  const rnd = seeded(555);
+  const ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, ph3 = rnd() * 6.28;
+  const edge = th => r * (1 + 0.02 * Math.sin(3 * th + ph1) + 0.012 * Math.sin(7 * th + ph2) + 0.007 * Math.sin(13 * th + ph3));
+
+  g.beginPath();
+  for (let i = 0; i <= 120; i++) {
+    const th = (i / 120) * Math.PI * 2;
+    const rr = edge(th);
+    i === 0 ? g.moveTo(cx + Math.cos(th) * rr, cy + Math.sin(th) * rr)
+            : g.lineTo(cx + Math.cos(th) * rr, cy + Math.sin(th) * rr);
+  }
+  g.closePath();
+  const base = g.createRadialGradient(cx - r * 0.18, cy - r * 0.2, r * 0.1, cx, cy, r * 1.05);
+  base.addColorStop(0, '#a63d28');
+  base.addColorStop(0.62, '#9a3324');
+  base.addColorStop(1, '#7e2a1c');       // 가장자리로 먹이 고인다
+  g.fillStyle = base; g.fill();
+  g.save(); g.clip();
+  for (let i = 0; i < 110; i++) {        // 다우빙 — 붓이 겹쳐 찍힌 얼룩
+    const u = Math.sqrt(rnd()), th = rnd() * Math.PI * 2;
+    const x = cx + Math.cos(th) * u * r * 0.94, y = cy + Math.sin(th) * u * r * 0.94;
+    const br = r * (0.05 + rnd() * 0.15);
+    const dark = rnd() < 0.55;
+    const rg2 = g.createRadialGradient(x, y, 0, x, y, br);
+    rg2.addColorStop(0, dark ? `rgba(96,24,14,${0.05 + rnd() * 0.09})` : `rgba(214,120,88,${0.04 + rnd() * 0.07})`);
+    rg2.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg2; g.beginPath(); g.arc(x, y, br, 0, 7); g.fill();
+  }
+  g.globalCompositeOperation = 'destination-out';   // 갈필 — 마른 붓이 긁고 지나간 결
+  for (let s = 0; s < 5; s++) {
+    const y0 = cy - r + (s + 0.5 + (rnd() - 0.5) * 0.5) * (r * 2 / 5);
+    g.beginPath();
+    for (let x = cx - r * 1.1; x <= cx + r * 1.1; x += 4) {
+      const y = y0 + Math.sin(x / (14 + s * 5) + s * 3) * r * 0.03;
+      x <= cx - r * 1.1 + 4 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.lineWidth = r * (0.008 + rnd() * 0.016);
+    g.strokeStyle = `rgba(0,0,0,${0.05 + rnd() * 0.08})`;
+    g.stroke();
+  }
+  g.globalCompositeOperation = 'source-atop';       // 먹 얼룩 그레인
+  g.globalAlpha = 0.75;
+  g.fillStyle = g.createPattern(noisePat, 'repeat');
+  g.fillRect(0, 0, sunSize, sunSize);
+  g.restore();
+}
+
+/* 능선 — 오프스크린에 그려 산 픽셀에만 먹 얼룩을 입힌다 */
+function drawLand(cam) {
+  if (!landCv) { landCv = document.createElement('canvas'); landCtx = landCv.getContext('2d'); }
+  if (landCv.width !== stageCv.width || landCv.height !== stageCv.height) {
+    landCv.width = stageCv.width; landCv.height = stageCv.height;
+    landPattern = landCtx.createPattern(noisePat, 'repeat');
+  }
+  const g = landCtx;
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  g.clearRect(0, 0, W, H);
+  for (const rg of ridges) {
+    const off = cam * rg.par;
+    const yAt = x => H * rg.base - rg.f(x + off) * H * rg.amp;
+    const topY = H * (rg.base - rg.amp);
+    const fill = g.createLinearGradient(0, topY, 0, H);
+    fill.addColorStop(0, `rgba(${INK},${rg.alpha * 1.15})`);
+    fill.addColorStop(0.5, `rgba(${INK},${rg.alpha})`);
+    fill.addColorStop(1, `rgba(${INK},${rg.alpha * 0.75})`);
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 8) g.lineTo(x, yAt(x));
+    g.lineTo(W, H); g.closePath();
+    g.fillStyle = fill; g.fill();
+    /* 크레스트 밴드 — 마루가 짙고 아래로 바랜다 (먹 붓의 첫 획) */
+    for (const [bh, ba] of [[0.016, 0.6], [0.045, 0.28]]) {
+      g.beginPath();
+      g.moveTo(0, yAt(0));
+      for (let x = 0; x <= W; x += 8) g.lineTo(x, yAt(x));
+      for (let x = W; x >= 0; x -= 8) g.lineTo(x, yAt(x) + H * bh);
+      g.closePath();
+      g.fillStyle = `rgba(${INK},${(rg.alpha * ba).toFixed(3)})`;
+      g.fill();
+    }
+    /* 갈필 — 능선 위 마른 붓 자국 */
+    g.lineWidth = 1.3;
+    g.beginPath();
+    let penDown = false;
+    for (let x = 0; x <= W; x += 7) {
+      const y = yAt(x);
+      if (rg.detail((x + off) * 1.7) > 0.42) {
+        penDown ? g.lineTo(x, y - 1) : g.moveTo(x, y - 1);
+        penDown = true;
+      } else penDown = false;
+    }
+    g.strokeStyle = `rgba(${INK},${rg.alpha * 1.7})`;
+    g.stroke();
+  }
+  /* 산 픽셀에만 먹 얼룩 */
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = landPattern;
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  ctx.drawImage(landCv, 0, 0, W, H);
+}
+
 let W = 0, H = 0, DPR = 1;
 function resize() {
   DPR = Math.min(devicePixelRatio || 1, 2);
   W = stageCv.clientWidth; H = stageCv.clientHeight;
   stageCv.width = W * DPR; stageCv.height = H * DPR;
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  buildSun();
   needsDraw = true;
   if (typeof wake === 'function') wake();
 }
@@ -85,20 +218,22 @@ function drawScene(p, time) {
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   }
 
-  /* 해 */
+  /* 해 — 주묵으로 찍은 원 (오프스크린 캐시) */
   const sx = W * 0.5 - cam * 0.18;
   const sy = H * (0.42 - p * 0.20) + Math.sin(time * 0.4) * 2;
   const sunA = clamp(1.15 - p * 1.35, 0, 1);
   if (sunA > 0.01) {
     const r = Math.min(W, H) * 0.075;
-    const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 2.6);
-    g.addColorStop(0, `rgba(${SEAL},${0.5 * sunA})`);
-    g.addColorStop(0.45, `rgba(${SEAL},${0.32 * sunA})`);
-    g.addColorStop(1, 'rgba(154,51,36,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(sx, sy, r * 2.6, 0, 7); ctx.fill();
-    ctx.fillStyle = `rgba(${SEAL},${0.55 * sunA})`;
-    ctx.beginPath(); ctx.arc(sx, sy, r, 0, 7); ctx.fill();
+    const halo = ctx.createRadialGradient(sx, sy, r * 0.6, sx, sy, r * 2.9);
+    halo.addColorStop(0, `rgba(${SEAL},${0.16 * sunA})`);
+    halo.addColorStop(0.55, `rgba(${SEAL},${0.07 * sunA})`);
+    halo.addColorStop(1, 'rgba(154,51,36,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(sx, sy, r * 2.9, 0, 7); ctx.fill();
+    ctx.save();
+    ctx.globalAlpha = 0.88 * sunA;
+    ctx.drawImage(sunCv, sx - sunSize / 2, sy - sunSize / 2, sunSize, sunSize);
+    ctx.restore();
 
     /* 불씨 — 해에서 피어오르는 잔불 (불의 장에서만) */
     const fireA = clamp(1 - Math.abs(chLocal(p, 0)) / 0.5, 0, 1);
@@ -135,40 +270,8 @@ function drawScene(p, time) {
     ctx.restore();
   }
 
-  /* 능선 3겹 — 시차 + 담묵 그라디언트 + 갈필 능선 */
-  for (const rg of ridges) {
-    const off = cam * rg.par;
-    const topY = H * (rg.base - rg.amp), botY = H;
-    const g = ctx.createLinearGradient(0, topY, 0, botY);
-    g.addColorStop(0, `rgba(${INK},${rg.alpha * 1.25})`);
-    g.addColorStop(0.45, `rgba(${INK},${rg.alpha})`);
-    g.addColorStop(1, `rgba(${INK},${rg.alpha * 0.8})`);
-    ctx.beginPath();
-    ctx.moveTo(0, H);
-    for (let x = 0; x <= W; x += 8) {
-      const y = H * rg.base - rg.f(x + off) * H * rg.amp;
-      ctx.lineTo(x, y);
-    }
-    ctx.lineTo(W, H);
-    ctx.closePath();
-    ctx.fillStyle = g;
-    ctx.fill();
-    /* 갈필 — 능선 위를 마른 붓이 스친 자국 */
-    ctx.save();
-    ctx.lineWidth = 1.3;
-    ctx.beginPath();
-    let penDown = false;
-    for (let x = 0; x <= W; x += 7) {
-      const y = H * rg.base - rg.f(x + off) * H * rg.amp;
-      if (rg.detail((x + off) * 1.7) > 0.42) {
-        penDown ? ctx.lineTo(x, y - 1) : ctx.moveTo(x, y - 1);
-        penDown = true;
-      } else penDown = false;
-    }
-    ctx.strokeStyle = `rgba(${INK},${rg.alpha * 1.6})`;
-    ctx.stroke();
-    ctx.restore();
-  }
+  /* 능선 3겹 — 오프스크린에서 크레스트 밴드·먹 얼룩 텍스처까지 입혀 합성 */
+  drawLand(cam);
 
   /* 골안개 — 능선 사이를 떠도는 흰 띠 */
   if (!reduceMotion) {
