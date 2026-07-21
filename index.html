@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -43,6 +43,7 @@
 <i class="nav-progress" id="navProgress" aria-hidden="true"></i>
 <nav class="nav" id="nav">
   <a class="nav-logo" href="#top" aria-label="Kyul home"><img src="assets/logo-alpha.png" alt="결 Kyul" /></a>
+  <button class="lang-toggle" id="langToggle" aria-label="Switch language"><span class="l-en">한글</span><span class="l-ko">English</span></button>
 </nav>
 
 <!-- ─────────── 1. 서(序) — 히어로 ─────────── -->
@@ -58,13 +59,12 @@
       <span class="sr-only">Kyul 결 — A Korean word puzzle that shapes the world</span>
       <img class="hero-logo" src="assets/logo-alpha.png" alt="" width="512" height="512" fetchpriority="high" />
     </h1>
-    <p class="hero-sub">A Korean word puzzle that shapes the world</p>
-    <p class="hero-sub-ko">말로 세상을 빚는 한글 퍼즐</p>
-    <p class="hero-line">Awaken a word — and the world moves by its <em>meaning</em></p>
+    <p class="hero-sub"><span class="l-en">A Korean word puzzle that shapes the world</span><span class="l-ko">말로 세상을 빚는 한글 퍼즐</span></p>
+    <p class="hero-line"><span class="l-en">Awaken a word — and the world moves by its <em>meaning</em></span><span class="l-ko">단어를 깨우치면, 그 <em>뜻대로</em> 세상이 움직인다</span></p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="#journey">Unroll the Scroll</a>
+      <a class="btn btn-primary" href="#journey"><span class="l-en">Unroll the Scroll</span><span class="l-ko">두루마리 펼치기</span></a>
     </div>
-    <p class="hero-stats">12 worlds · 144 puzzles · coming to iOS &amp; Android</p>
+    <p class="hero-stats"><span class="l-en">12 worlds · 144 puzzles · coming to iOS &amp; Android</span><span class="l-ko">열두 세계 · 백사십사 마당 · iOS · Android 출시 예정</span></p>
   </div>
 </header>
 
@@ -76,42 +76,60 @@
       <div class="chapter" data-i="0">
         <p class="ch-jamo"><span>ㅂ</span><span>ㅜ</span><span>ㄹ</span></p>
         <p class="ch-word">불</p>
-        <p class="ch-en">fire</p>
-        <p class="ch-poem"><span>On a page of nothing but darkness,</span><span>the first spark was struck</span><span class="ko">어둠뿐인 종이 위에 첫 불씨가 당겨졌다</span></p>
+        <p class="ch-en l-en">fire</p>
+        <p class="ch-poem">
+          <span class="line l-en">On a page of nothing but darkness,</span><span class="line l-en">the first spark was struck</span>
+          <span class="line l-ko">어둠뿐인 종이 위에</span><span class="line l-ko">첫 불씨가 당겨졌다</span>
+        </p>
         <span class="seal ch-stamp">불</span>
       </div>
       <div class="chapter" data-i="1">
         <p class="ch-jamo"><span>ㅁ</span><span>ㅜ</span><span>ㄹ</span></p>
         <p class="ch-word">물</p>
-        <p class="ch-en">water</p>
-        <p class="ch-poem"><span>A river began to flow,</span><span>and mist settled in the valleys</span><span class="ko">강이 흐르고 안개가 골을 메웠다</span></p>
+        <p class="ch-en l-en">water</p>
+        <p class="ch-poem">
+          <span class="line l-en">A river began to flow,</span><span class="line l-en">and mist settled in the valleys</span>
+          <span class="line l-ko">강이 흐르고</span><span class="line l-ko">안개가 골을 메웠다</span>
+        </p>
         <span class="seal ch-stamp">물</span>
       </div>
       <div class="chapter" data-i="2">
         <p class="ch-jamo"><span>ㅂ</span><span>ㅣ</span><span>ㅊ</span></p>
         <p class="ch-word">빛</p>
-        <p class="ch-en">light</p>
-        <p class="ch-poem"><span>The sky opened,</span><span>and light came pouring down</span><span class="ko">하늘이 트이고 빛살이 내려앉았다</span></p>
+        <p class="ch-en l-en">light</p>
+        <p class="ch-poem">
+          <span class="line l-en">The sky opened,</span><span class="line l-en">and light came pouring down</span>
+          <span class="line l-ko">하늘이 트이고</span><span class="line l-ko">빛살이 내려앉았다</span>
+        </p>
         <span class="seal ch-stamp">빛</span>
       </div>
       <div class="chapter" data-i="3">
         <p class="ch-jamo"><span>ㄷ</span><span>ㅗ</span><span>ㄹ</span></p>
         <p class="ch-word">돌</p>
-        <p class="ch-en">stone</p>
-        <p class="ch-poem"><span>Mountains rose,</span><span>and the rocks found their place</span><span class="ko">산이 솟고 바위가 자리를 잡았다</span></p>
+        <p class="ch-en l-en">stone</p>
+        <p class="ch-poem">
+          <span class="line l-en">Mountains rose,</span><span class="line l-en">and the rocks found their place</span>
+          <span class="line l-ko">산이 솟고</span><span class="line l-ko">바위가 자리를 잡았다</span>
+        </p>
         <span class="seal ch-stamp">돌</span>
       </div>
       <div class="chapter" data-i="4">
         <p class="ch-jamo"><span>ㅅ</span><span>ㅜ</span><span>ㅁ</span></p>
         <p class="ch-word">숨</p>
-        <p class="ch-en">breath</p>
-        <p class="ch-poem"><span>The wind began to blow,</span><span>and all things drew breath</span><span class="ko">바람이 불어 만물이 숨을 쉬었다</span></p>
+        <p class="ch-en l-en">breath</p>
+        <p class="ch-poem">
+          <span class="line l-en">The wind began to blow,</span><span class="line l-en">and all things drew breath</span>
+          <span class="line l-ko">바람이 불어</span><span class="line l-ko">만물이 숨을 쉬었다</span>
+        </p>
         <span class="seal ch-stamp">숨</span>
       </div>
       <div class="chapter chapter-final" data-i="5">
         <p class="ch-jamo"><span>ㄱ</span><span>ㅕ</span><span>ㄹ</span></p>
         <p class="ch-word ch-word-logo"><img src="assets/logo-alpha.png" alt="결 Kyul" /></p>
-        <p class="ch-poem"><span>And at the very end,</span><span>the grain of the world became letters</span><span class="ko">그리고 마지막에, 세상의 결이 글자가 되었다</span></p>
+        <p class="ch-poem">
+          <span class="line l-en">And at the very end,</span><span class="line l-en">the grain of the world became letters</span>
+          <span class="line l-ko">그리고 마지막에,</span><span class="line l-ko">세상의 결이 글자가 되었다</span>
+        </p>
         <span class="seal ch-stamp">결</span>
       </div>
     </div>
@@ -124,11 +142,11 @@
 <!-- ─────────── 3. 놀이법 — 인터랙티브 데모 ─────────── -->
 <section class="play" id="play">
   <div class="sec-head reveal">
-    <p class="sec-kicker">How to Play · 遊</p>
-    <h2>Link touching letters in a <em>straight line</em><br/>to form a word</h2>
-    <p class="ko-sub">붙은 자모를 일자로 이어 단어를 만드세요</p>
-    <p class="sec-desc">Complete a word and its tiles burn to ink — and the word's <strong>meaning</strong> comes true
-      on the board. Water washes away, fire burns. Clear every tile to finish the stage.</p>
+    <p class="sec-kicker"><span class="l-en">How to Play · 遊</span><span class="l-ko">놀이법 · 遊</span></p>
+    <h2><span class="l-en">Link touching letters in a <em>straight line</em><br/>to form a word</span><span class="l-ko">붙은 자모를 <em>일자</em>로 이어<br/>단어를 만드세요</span></h2>
+    <p class="sec-desc"><span class="l-en">Complete a word and its tiles burn to ink — and the word's <strong>meaning</strong> comes true
+      on the board. Water washes away, fire burns. Clear every tile to finish the stage.</span><span class="l-ko">단어가 완성되면 그 칸이 먹으로 타오르고, 단어의 <strong>뜻</strong>이 판 위에 실제로 일어납니다.
+      물은 씻어내고, 불은 태웁니다. 모든 칸을 비우면 한 마당이 끝납니다.</span></p>
   </div>
 
   <div class="demo-wrap reveal">
@@ -136,9 +154,9 @@
       <div class="demo-board" id="demoBoard" role="group" aria-label="Playable demo"></div>
       <div class="demo-clear" id="demoClear" hidden>
         <p class="demo-clear-syll">결</p>
-        <p class="demo-clear-msg">Stage Clear · 한 마당 클리어</p>
+        <p class="demo-clear-msg"><span class="l-en">Stage Clear</span><span class="l-ko">한 마당 클리어</span></p>
         <span class="seal">결</span>
-        <button class="btn" id="demoAgain">Play again</button>
+        <button class="btn" id="demoAgain"><span class="l-en">Play again</span><span class="l-ko">다시 놀기</span></button>
       </div>
     </div>
     <div class="demo-side">
@@ -147,12 +165,12 @@
         <p class="demo-meaning" id="demoMeaning">&nbsp;</p>
       </div>
       <ul class="demo-hints">
-        <li><b>Drag</b> — or tap one by one — to link the letters.</li>
-        <li><b>물</b> (water) flows vertically. Complete it to wash away the noise beside it.</li>
-        <li><b>불</b> (fire) burns horizontally. It scorches the remaining noise.</li>
-        <li>The key: telling real words from the noise.</li>
+        <li><span class="l-en"><b>Drag</b> — or tap one by one — to link the letters.</span><span class="l-ko"><b>끌어서</b> 또는 <b>하나씩 눌러서</b> 자모를 이어보세요.</span></li>
+        <li><span class="l-en"><b>물</b> (water) flows vertically. Complete it to wash away the noise beside it.</span><span class="l-ko"><b>물</b> — 세로로 흐릅니다. 완성되면 곁의 노이즈를 씻어냅니다.</span></li>
+        <li><span class="l-en"><b>불</b> (fire) burns horizontally. It scorches the remaining noise.</span><span class="l-ko"><b>불</b> — 가로로 타오릅니다. 남은 노이즈를 태웁니다.</span></li>
+        <li><span class="l-en">The key: telling real words from the noise.</span><span class="l-ko">단어가 아닌 글자(노이즈)를 가려내는 것이 핵심.</span></li>
       </ul>
-      <button class="btn" id="demoReset">↺ Start over</button>
+      <button class="btn" id="demoReset"><span class="l-en">↺ Start over</span><span class="l-ko">↺ 처음부터</span></button>
     </div>
   </div>
 </section>
@@ -160,11 +178,11 @@
 <!-- ─────────── 4. 세계 — 12월드 ─────────── -->
 <section class="worlds" id="worlds">
   <div class="sec-head reveal">
-    <p class="sec-kicker">The Worlds · 界</p>
-    <h2>Twelve worlds,<br/><em>one hundred forty-four</em> puzzles</h2>
-    <p class="ko-sub">열두 개의 세계, 백사십사 개의 마당</p>
-    <p class="sec-desc">The story of creation rests on the frame of the eight trigrams (八卦).
-      Clear a world, and one more scene is painted onto the scroll.</p>
+    <p class="sec-kicker"><span class="l-en">The Worlds · 界</span><span class="l-ko">세계 · 界</span></p>
+    <h2><span class="l-en">Twelve worlds,<br/><em>one hundred forty-four</em> puzzles</span><span class="l-ko">열두 개의 세계,<br/><em>백사십사</em> 개의 마당</span></h2>
+    <p class="sec-desc"><span class="l-en">The story of creation rests on the frame of the eight trigrams (八卦).
+      Clear a world, and one more scene is painted onto the scroll.</span><span class="l-ko">팔괘(八卦)의 골격 위에 창세의 이야기가 놓입니다.
+      한 세계를 비울 때마다 두루마리에 그림이 한 폭씩 더해집니다.</span></p>
   </div>
   <div class="world-grid reveal" id="worldGrid"></div>
 </section>
@@ -174,23 +192,26 @@
   <div class="pillar reveal">
     <p class="pillar-no">一</p>
     <p class="pillar-sym">意</p>
-    <h3>Meaning is power</h3>
-    <p>These aren't invented symbols — they're <b>real Korean words</b>. Awaken one, and the board
-    obeys its meaning: water soaks, seeds sprout, snow(눈) covers.</p>
+    <h3><span class="l-en">Meaning is power</span><span class="l-ko">뜻이 곧 힘</span></h3>
+    <p><span class="l-en">These aren't invented symbols — they're <b>real Korean words</b>. Awaken one, and the board
+    obeys its meaning: water soaks, seeds sprout, snow(눈) covers.</span><span class="l-ko">의미 없는 기호가 아니라 <b>진짜 한국어</b>.
+    단어를 깨우치면 그 뜻 그대로 판이 반응합니다 — 물은 적시고, 씨는 싹트고, 눈(雪)은 덮습니다.</span></p>
   </div>
   <div class="pillar reveal">
     <p class="pillar-no">二</p>
     <p class="pillar-sym">墨</p>
-    <h3>The feel of ink</h3>
-    <p>Hanji paper, black ink, and a single seal-red. Every solve is a <b>brushstroke</b> —
-    clear a stage, and another landscape is painted on the scroll.</p>
+    <h3><span class="l-en">The feel of ink</span><span class="l-ko">수묵의 감각</span></h3>
+    <p><span class="l-en">Hanji paper, black ink, and a single seal-red. Every solve is a <b>brushstroke</b> —
+    clear a stage, and another landscape is painted on the scroll.</span><span class="l-ko">한지 위의 먹과 낙관 주홍, 단 두 색.
+    푸는 행위가 곧 <b>붓질</b>이 되어, 마당을 비울 때마다 산수화 한 폭이 그려집니다.</span></p>
   </div>
   <div class="pillar reveal">
     <p class="pillar-no">三</p>
     <p class="pillar-sym">☰</p>
-    <h3>A trigram journey</h3>
-    <p>Fire ☲, water ☵, light ☰, stone ☶… the world is created along the <b>eight trigrams</b> —
-    and when you finish, all eight stand complete behind you.</p>
+    <h3><span class="l-en">A trigram journey</span><span class="l-ko">팔괘의 여정</span></h3>
+    <p><span class="l-en">Fire ☲, water ☵, light ☰, stone ☶… the world is created along the <b>eight trigrams</b> —
+    and when you finish, all eight stand complete behind you.</span><span class="l-ko">불☲ 물☵ 빛☰ 돌☶ … 여덟 괘를 따라 세상이 창조되고,
+    다 깬 뒤 돌아보면 <b>여덟 괘</b>가 완성되어 있습니다.</span></p>
   </div>
 </section>
 
@@ -203,18 +224,17 @@
     <path d="M100 18 C 150 18, 184 55, 184 100 C 184 148, 146 183, 99 183 C 53 183, 17 147, 17 101 C 17 58, 48 24, 88 19"
           fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
   </svg>
-  <h2 class="outro-title reveal">Soon, you'll draw<br/>the first stroke</h2>
-  <p class="ko-sub reveal">곧, 첫 획을 긋게 됩니다</p>
+  <h2 class="outro-title reveal"><span class="l-en">Soon, you'll draw<br/>the first stroke</span><span class="l-ko">곧, 첫 획을<br/>긋게 됩니다</span></h2>
   <div class="hero-actions reveal">
-    <a class="btn btn-primary btn-big" href="mailto:admin@chartq.app">Get launch updates</a>
+    <a class="btn btn-primary btn-big" href="mailto:admin@chartq.app"><span class="l-en">Get launch updates</span><span class="l-ko">출시 소식 받기</span></a>
   </div>
-  <p class="outro-soon reveal">Coming to iOS &amp; Android — we're grinding the ink</p>
+  <p class="outro-soon reveal"><span class="l-en">Coming to iOS &amp; Android — we're grinding the ink</span><span class="l-ko">iOS · Android 앱 — 붓을 갈고 있습니다</span></p>
   <div class="outro-foot">
     <img class="foot-logo" src="assets/logo-alpha.png" alt="결 Kyul" />
-    <p>© 2026 ChartQ · Kyul 「결」 — Korean word puzzle</p>
+    <p><span class="l-en">© 2026 ChartQ · Kyul 「결」 — Korean word puzzle</span><span class="l-ko">© 2026 ChartQ · 「결」 — 한글 단어 퍼즐</span></p>
     <div class="legal-links">
-      <a href="/privacy">Privacy Policy</a>
-      <a href="/terms">Terms of Service</a>
+      <a href="/privacy"><span class="l-en">Privacy Policy</span><span class="l-ko">개인정보 처리방침</span></a>
+      <a href="/terms"><span class="l-en">Terms of Service</span><span class="l-ko">서비스 이용약관</span></a>
       <a href="mailto:admin@chartq.app">admin@chartq.app</a>
     </div>
   </div>

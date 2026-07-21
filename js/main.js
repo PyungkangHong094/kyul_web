@@ -450,11 +450,14 @@ function layoutChapters(p) {
       s.style.opacity = lerp(0.9, 0.4, smooth(arrive)).toFixed(2);
     });
 
-    /* 시행 — 한 행씩 스민다 */
-    el.querySelectorAll('.ch-poem span').forEach((ln, k) => {
+    /* 시행 — 한 행씩 스민다 (현재 언어의 행만) */
+    let k = 0;
+    el.querySelectorAll('.ch-poem .line').forEach(ln => {
+      if (ln.offsetParent === null) return;   // 숨은 언어의 행 (display:none)
       const la = clamp((arrive - k * 0.18) / 0.5, 0, 1);
       ln.style.opacity = smooth(la).toFixed(2);
       ln.style.transform = `translateY(${((1 - smooth(la)) * 12).toFixed(1)}px)`;
+      k++;
     });
 
     /* 낙관 날인 — 중심에 닿으면 쾅 */
@@ -512,6 +515,21 @@ addEventListener('scroll', () => {
 const nav = document.getElementById('nav');
 const navProgress = document.getElementById('navProgress');
 
+/* 언어 토글 — EN ↔ KO */
+const langToggle = document.getElementById('langToggle');
+function setLang(lang) {
+  document.documentElement.dataset.lang = lang;
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('kyul-lang', lang); } catch (e) {}
+}
+setLang((() => {
+  try { const s = localStorage.getItem('kyul-lang'); if (s === 'ko' || s === 'en') return s; } catch (e) {}
+  return (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+})());
+langToggle.addEventListener('click', () => {
+  setLang(document.documentElement.dataset.lang === 'en' ? 'ko' : 'en');
+});
+
 const io = new IntersectionObserver(es => {
   es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
 }, { threshold: 0.15 });
@@ -558,30 +576,30 @@ addEventListener('pointerdown', e => {
 
 /* ══════════════ 3. 세계 그리드 ══════════════ */
 const WORLDS = [
-  { w: '불', en: 'Fire', g: '☲ 리(離)', d: 'Dawn — the first spark sears the darkness' },
-  { w: '물', en: 'Water', g: '☵ 감(坎)', d: 'Rivers flow and mist rises' },
-  { w: '빛', en: 'Light', g: '☰ 건(乾)', d: 'The sky opens; rays pour down' },
-  { w: '돌', en: 'Stone', g: '☶ 간(艮)', d: 'Mountains rise; rocks settle in place' },
-  { w: '붓', en: 'Brush', g: '人 사람', d: 'A human lifts the brush and draws the world' },
-  { w: '길', en: 'Road', g: '☷ 곤(坤)', d: 'Paths reach out and join one another' },
-  { w: '숨', en: 'Breath', g: '☴ 손(巽)', d: 'Wind blows; all things breathe' },
-  { w: '못', en: 'Pond', g: '☱ 태(兌)', d: 'Ripples spread across still water' },
-  { w: '울', en: 'Thunder', g: '☳ 진(震)', d: 'Thunder shakes the open sky' },
-  { w: '씨', en: 'Seed', g: '種 씨앗', d: 'Life is sown deep into the soil' },
-  { w: '싹', en: 'Sprout', g: '芽 새싹', d: 'The sleeping seed opens its eyes' },
-  { w: '눈', en: 'Snow · Eye', g: '雪 · 目', d: 'One letter, two meanings — cover, or awaken' },
-  { w: '끝', en: 'End', g: '循 순환', d: 'The end returns to the beginning — coming soon', soon: true },
-  { w: '꿈', en: 'Dream', g: '夢 꿈', d: 'A night of moon, stars and clouds — coming soon', soon: true },
-  { w: '결', en: 'Kyul', g: '結 맺음', d: 'The last word is this very name — coming soon', soon: true },
+  { w: '불', en: 'Fire', g: '☲ 리(離)', d: 'Dawn — the first spark sears the darkness', ko: '여명 — 첫 불씨가 어둠을 사른다' },
+  { w: '물', en: 'Water', g: '☵ 감(坎)', d: 'Rivers flow and mist rises', ko: '강이 흐르고 안개가 피어난다' },
+  { w: '빛', en: 'Light', g: '☰ 건(乾)', d: 'The sky opens; rays pour down', ko: '하늘이 트이고 빛살이 내린다' },
+  { w: '돌', en: 'Stone', g: '☶ 간(艮)', d: 'Mountains rise; rocks settle in place', ko: '산이 솟고 바위가 자리 잡는다' },
+  { w: '붓', en: 'Brush', g: '人 사람', d: 'A human lifts the brush and draws the world', ko: '사람이 붓을 들어 세상을 긋는다' },
+  { w: '길', en: 'Road', g: '☷ 곤(坤)', d: 'Paths reach out and join one another', ko: '오솔길이 서로를 잇는다' },
+  { w: '숨', en: 'Breath', g: '☴ 손(巽)', d: 'Wind blows; all things breathe', ko: '바람이 불고 만물이 숨 쉰다' },
+  { w: '못', en: 'Pond', g: '☱ 태(兌)', d: 'Ripples spread across still water', ko: '고요한 수면에 파문이 번진다' },
+  { w: '울', en: 'Thunder', g: '☳ 진(震)', d: 'Thunder shakes the open sky', ko: '우레가 하늘을 울린다' },
+  { w: '씨', en: 'Seed', g: '種 씨앗', d: 'Life is sown deep into the soil', ko: '흙 속에 생명이 심긴다' },
+  { w: '싹', en: 'Sprout', g: '芽 새싹', d: 'The sleeping seed opens its eyes', ko: '잠든 씨앗이 눈을 뜬다' },
+  { w: '눈', en: 'Snow · Eye', g: '雪 · 目', d: 'One letter, two meanings — cover, or awaken', ko: '한 글자 두 뜻 — 덮거나, 뜨거나' },
+  { w: '끝', en: 'End', g: '循 순환', d: 'The end returns to the beginning — coming soon', ko: '끝은 다시 처음으로 — 준비 중', soon: true },
+  { w: '꿈', en: 'Dream', g: '夢 꿈', d: 'A night of moon, stars and clouds — coming soon', ko: '달과 별과 구름의 밤 — 준비 중', soon: true },
+  { w: '결', en: 'Kyul', g: '結 맺음', d: 'The last word is this very name — coming soon', ko: '마지막 단어는, 이 이름 — 준비 중', soon: true },
 ];
 document.getElementById('worldGrid').innerHTML = WORLDS.map((o, i) => `
   <div class="wcard${o.soon ? ' locked' : ''} reveal">
-    ${o.soon ? '<span class="w-soon">soon</span>' : ''}
-    <p class="w-no">World ${i + 1}</p>
+    ${o.soon ? '<span class="w-soon"><span class="l-en">soon</span><span class="l-ko">근일</span></span>' : ''}
+    <p class="w-no"><span class="l-en">World ${i + 1}</span><span class="l-ko">제${i + 1}계</span></p>
     <p class="w-gua">${o.g}</p>
     <p class="w-word">${o.w}</p>
-    <p class="w-en">${o.en}</p>
-    <p class="w-desc">${o.d}</p>
+    <p class="w-en l-en">${o.en}</p>
+    <p class="w-desc"><span class="l-en">${o.d}</span><span class="l-ko">${o.ko}</span></p>
   </div>`).join('');
 document.querySelectorAll('.world-grid .reveal').forEach((el, i) => {
   el.style.setProperty('--rd', (i % 6) * 0.06 + 's');
@@ -597,8 +615,8 @@ const LAYOUT = [
   ['ㅂ', 'ㅜ', 'ㄹ', null],
 ];
 const WORD_DEFS = {
-  'ㅁㅜㄹ': { syll: '물', meaning: 'water 水 — washes away the noise beside it', extra: [[0, 2]] },
-  'ㅂㅜㄹ': { syll: '불', meaning: 'fire 火 — burns the remaining noise', extra: [[1, 3], [2, 2]] },
+  'ㅁㅜㄹ': { syll: '물', meaning: '<span class="l-en">water 水 — washes away the noise beside it</span><span class="l-ko">물 수(水) — 곁의 노이즈를 씻어냅니다</span>', extra: [[0, 2]] },
+  'ㅂㅜㄹ': { syll: '불', meaning: '<span class="l-en">fire 火 — burns the remaining noise</span><span class="l-ko">불 화(火) — 남은 노이즈를 태웁니다</span>', extra: [[1, 3], [2, 2]] },
 };
 
 const board = document.getElementById('demoBoard');
@@ -710,7 +728,7 @@ function complete(word) {
   busy = true;
   pathEl.textContent = word.syll;
   pathEl.classList.remove('empty');
-  meanEl.textContent = word.meaning;
+  meanEl.innerHTML = word.meaning;
   const targets = [...sel.map(s => [s.r, s.c]), ...word.extra.filter(([r, c]) => !burned.has(key(r, c)))];
   targets.forEach(([r, c], i) => setTimeout(() => {
     burned.add(key(r, c));
