@@ -165,14 +165,6 @@ body{
 
 @keyframes seal-stamp{from{opacity:0; transform:scale(2.4) rotate(-8deg)} 70%{opacity:1; transform:scale(.94)} to{opacity:1; transform:scale(1) rotate(-3deg)}}
 
-.scroll-hint{position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
-  display:flex; flex-direction:column; align-items:center; gap:10px; z-index:2; animation:fade-up 1s ease 3.1s both}
-.scroll-hint-line{width:1px; height:46px; background:var(--line-bold); position:relative; overflow:hidden}
-.scroll-hint-line::after{content:''; position:absolute; left:0; top:-40%; width:100%; height:40%;
-  background:var(--ink); animation:hint-flow 2s ease-in-out infinite}
-@keyframes hint-flow{to{top:110%}}
-.scroll-hint-txt{font-size:11.5px; letter-spacing:.3em; padding-left:.3em; color:var(--ink-faint)}
-
 /* 붓끝 자국 — 히어로 포인터 궤적 */
 .ink-dot{position:fixed; z-index:60; pointer-events:none; border-radius:50%;
   background:radial-gradient(circle at 42% 38%, rgba(44,43,37,.5), rgba(24,24,15,.28) 60%, transparent 75%);
