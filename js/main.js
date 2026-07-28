@@ -11,6 +11,8 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const smooth = t => t * t * (3 - 2 * t);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* 모바일·터치 기기 = 저부하 모드 (SVG 필터·고해상도 캔버스 생략) */
+const lowFX = matchMedia('(max-width:820px), (hover:none) and (pointer:coarse)').matches;
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
@@ -163,13 +165,21 @@ function buildSun() {
   g.globalAlpha = 1;
 }
 
-/* 능선 — 오프스크린에 그려 산 픽셀에만 먹 얼룩을 입힌다 */
+/* 능선 — 오프스크린에 그려 산 픽셀에만 먹 얼룩을 입힌다.
+   카메라가 거의 안 움직였으면 캐시를 재사용한다 — 모바일 프레임 비용의 대부분을 아낀다 */
+let lastLandCam = -1e9;
 function drawLand(cam) {
   if (!landCv) { landCv = document.createElement('canvas'); landCtx = landCv.getContext('2d'); }
-  if (landCv.width !== stageCv.width || landCv.height !== stageCv.height) {
+  const resized = landCv.width !== stageCv.width || landCv.height !== stageCv.height;
+  if (resized) {
     landCv.width = stageCv.width; landCv.height = stageCv.height;
     landPattern = landCtx.createPattern(noisePat, 'repeat');
   }
+  if (!resized && Math.abs(cam - lastLandCam) < (lowFX ? 1.2 : 0.35)) {
+    ctx.drawImage(landCv, 0, 0, W, H);
+    return;
+  }
+  lastLandCam = cam;
   const g = landCtx;
   g.setTransform(DPR, 0, 0, DPR, 0, 0);
   g.clearRect(0, 0, W, H);
@@ -219,11 +229,16 @@ function drawLand(cam) {
 
 let W = 0, H = 0, DPR = 1;
 function resize() {
-  DPR = Math.min(devicePixelRatio || 1, 2);
-  W = stageCv.clientWidth; H = stageCv.clientHeight;
+  measure();
+  const dpr = Math.min(devicePixelRatio || 1, lowFX ? 1.5 : 2);   // 모바일은 1.5로 캡 — 수묵 워시라 화질 차이 없음
+  const w = stageCv.clientWidth, h = stageCv.clientHeight;
+  /* 모바일 주소창 접힘/펼침 resize — 캔버스 크기가 그대로면 재빌드하지 않는다 (스크롤 중 히치 방지) */
+  if (w === W && h === H && dpr === DPR && sunCv) return;
+  DPR = dpr; W = w; H = h;
   stageCv.width = W * DPR; stageCv.height = H * DPR;
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   buildSun();
+  lastLandCam = -1e9;
   needsDraw = true;
   if (typeof wake === 'function') wake();
 }
@@ -435,7 +450,9 @@ function layoutChapters(p) {
     const arrive = clamp(1 - Math.abs(t) / 0.2, 0, 1);
     const word = el.querySelector('.ch-word');
     /* 잉크 스밈 — 도착할수록 번짐(displacement)이 잦아들며 글자가 마른다 */
-    if (arrive > 0 && arrive < 0.97) {
+    if (lowFX) {
+      if (word.style.filter) word.style.filter = '';   // 모바일: 매 프레임 SVG 필터 재계산이 최악의 잭 — 생략
+    } else if (arrive > 0 && arrive < 0.97) {
       inkSpreadMap.setAttribute('scale', ((1 - smooth(arrive)) * 55).toFixed(1));
       word.style.filter = `url(#inkSpread) blur(${((1 - smooth(arrive)) * 5).toFixed(2)}px)`;
     } else {
@@ -472,17 +489,22 @@ function layoutChapters(p) {
 
 /* 낙관 도장 → 해당 장으로 이동 */
 jpDots.forEach(d => d.addEventListener('click', () => {
-  const total = journey.offsetHeight - innerHeight;
   const i = +d.dataset.i;
-  scrollTo({ top: journey.offsetTop + total * ((i + 0.5) / N_CH), behavior: 'smooth' });
+  scrollTo({ top: journeyTop + journeyTotal * ((i + 0.5) / N_CH), behavior: 'smooth' });
 }));
 
 /* ── 관성 스크럽 + 살아있는 캔버스 루프 ── */
 let targetP = 0, curP = 0, needsDraw = true, rafId = null, stageVisible = false;
 
+/* 레이아웃 치수는 resize 때만 측정 — 스크롤 핸들러에서 offsetHeight/scrollHeight 읽기 금지 */
+let journeyTop = 0, journeyTotal = 1, docScrollable = 1;
+function measure() {
+  journeyTop = journey.offsetTop;
+  journeyTotal = Math.max(1, journey.offsetHeight - innerHeight);
+  docScrollable = Math.max(1, document.body.scrollHeight - innerHeight);
+}
 function computeTarget() {
-  const total = journey.offsetHeight - innerHeight;
-  targetP = clamp((scrollY - journey.offsetTop) / total, 0, 1);
+  targetP = clamp((scrollY - journeyTop) / journeyTotal, 0, 1);
 }
 function tick(now) {
   rafId = null;
@@ -507,7 +529,7 @@ new IntersectionObserver(es => {
 addEventListener('scroll', () => {
   computeTarget();
   nav.classList.toggle('scrolled', scrollY > 40);
-  navProgress.style.width = (scrollY / (document.body.scrollHeight - innerHeight) * 100).toFixed(2) + '%';
+  navProgress.style.width = (scrollY / docScrollable * 100).toFixed(2) + '%';
   wake();
 }, { passive: true });
 
@@ -530,6 +552,11 @@ langToggle.addEventListener('click', () => {
   setLang(document.documentElement.dataset.lang === 'en' ? 'ko' : 'en');
 });
 
+/* 스토어 감지 — 기기에 맞는 다운로드 버튼 (iOS 미출시: iOS 기기엔 Play 버튼 대신 '준비 중') */
+const ua = navigator.userAgent || '';
+const isIOS = /iPad|iPhone|iPod/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints > 1);
+document.documentElement.dataset.store = isIOS ? 'ios' : /Android/i.test(ua) ? 'android' : 'other';
+
 const io = new IntersectionObserver(es => {
   es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
 }, { threshold: 0.15 });
@@ -546,6 +573,7 @@ const heroLogo = document.querySelector('.hero-logo');
 let lastDot = { x: -99, y: -99 };
 if (!reduceMotion) {
   addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;   // 터치 스크롤 중 먹 자국·패럴랙스 갱신 금지 (잭 유발)
     if (scrollY > innerHeight) return;
     const dx = (e.clientX / innerWidth - 0.5), dy = (e.clientY / innerHeight - 0.5);
     heroMtn.style.transform = `translate(${dx * -16}px, ${dy * -6}px)`;
@@ -772,3 +800,5 @@ buildBoard();
 resize();
 computeTarget();
 wake();
+/* 폰트·이미지 로드 후 문서 높이가 바뀔 수 있다 — 치수만 재측정 */
+addEventListener('load', () => { measure(); computeTarget(); }, { once: true });

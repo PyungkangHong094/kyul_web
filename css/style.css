@@ -87,6 +87,17 @@ body{
 .btn-primary:hover{border-color:var(--seal)}
 .btn-big{font-size:17px; padding:17px 40px}
 
+/* 스토어 버튼 — html[data-store] 로 기기별 분기 (android/ios/other) */
+.btn-store{gap:10px}
+.btn-store svg{width:17px; height:17px; flex:none}
+.store-soon{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:var(--serif); font-size:13px; letter-spacing:.14em; color:var(--ink-faint);
+  border:1px dashed var(--line-bold); border-radius:3px; padding:13px 22px;
+}
+html[data-store="ios"] .store-android{display:none !important}
+html:not([data-store="ios"]) .store-ios-only{display:none !important}
+
 .enso{width:150px; height:150px; color:var(--ink); opacity:.09}
 .enso-sm{width:90px; height:90px; opacity:.14}
 
@@ -426,6 +437,23 @@ section{position:relative}
 .legal-links{display:flex; gap:18px; justify-content:center; margin-top:6px}
 .legal-links a{font-size:12px; letter-spacing:.12em; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; transition:color .18s,border-color .18s}
 .legal-links a:hover{color:var(--ink); border-color:var(--line-bold)}
+
+/* ── 모바일 성능 — 스크롤 버벅임 제거 ───── */
+/* JS의 lowFX 판정과 동일 조건. 전면 블렌드·SVG 번짐 필터·backdrop-filter 는
+   모바일 GPU에서 스크롤 프레임을 통째로 잡아먹는다 — 저부하 대체로 교체 */
+@media (max-width:820px), (hover:none) and (pointer:coarse){
+  .grain{mix-blend-mode:normal; opacity:.34}          /* 전면 multiply 재합성 제거 — 어두운 노이즈라 시각차 없음 */
+  .reveal{filter:none}                                 /* blur 리빌 → opacity/transform 만 */
+  .reveal.in{filter:none}
+  .nav.scrolled{backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(239,234,224,.96)}
+  .ink-ripple,.ink-splat,.wcard::before{filter:none}   /* 탭마다 SVG 번짐 필터 렌더 금지 */
+  .dcell.ink{filter:none; animation-name:cell-bloom-lite}
+  @keyframes cell-bloom-lite{
+    from{transform:scale(.28); opacity:0}
+    62%{transform:scale(1.12) translateY(3px); opacity:1}
+    to{transform:scale(1) translateY(4px); opacity:1}
+  }
+}
 
 /* ── 반응형·접근성 ────────────────────── */
 @media (max-width:760px){
