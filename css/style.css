@@ -87,16 +87,11 @@ body{
 .btn-primary:hover{border-color:var(--seal)}
 .btn-big{font-size:17px; padding:17px 40px}
 
-/* 스토어 버튼 — html[data-store] 로 기기별 분기 (android/ios/other) */
+/* 스토어 버튼 — html[data-store] 로 기기별 분기: ios→App Store만, android→Play만, other→둘 다 */
 .btn-store{gap:10px}
 .btn-store svg{width:17px; height:17px; flex:none}
-.store-soon{
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  font-family:var(--serif); font-size:13px; letter-spacing:.14em; color:var(--ink-faint);
-  border:1px dashed var(--line-bold); border-radius:3px; padding:13px 22px;
-}
 html[data-store="ios"] .store-android{display:none !important}
-html:not([data-store="ios"]) .store-ios-only{display:none !important}
+html[data-store="android"] .store-ios{display:none !important}
 
 .enso{width:150px; height:150px; color:var(--ink); opacity:.09}
 .enso-sm{width:90px; height:90px; opacity:.14}
