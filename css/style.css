@@ -410,6 +410,26 @@ section{position:relative}
   to{opacity:0; transform:translate(var(--sx,0), var(--sy,0)) scale(1)}
 }
 
+/* ── /kyul 스마트 스토어 링크 (데스크톱 폴백) ── */
+.getapp{
+  min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:16px; text-align:center; padding:40px 20px;
+}
+.getapp-logo{width:clamp(200px,36vw,320px); height:auto; user-select:none; -webkit-user-drag:none;
+  animation:logo-soak 1.6s cubic-bezier(.25,.6,.3,1) .2s both;
+  -webkit-mask-image:radial-gradient(circle at 50% 46%, #000 58%, transparent 74%);
+          mask-image:radial-gradient(circle at 50% 46%, #000 58%, transparent 74%);
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:center;  mask-position:center;
+  -webkit-mask-size:250% 250%;   mask-size:250% 250%;
+}
+.getapp-sub{font-size:clamp(16px,2.4vw,20px); letter-spacing:.1em; color:var(--ink-soft)}
+.getapp-line{font-size:13px; letter-spacing:.26em; padding-left:.26em; color:var(--ink-faint)}
+.getapp .hero-actions{margin-top:10px}
+.getapp-home{margin-top:22px; font-size:13px; letter-spacing:.1em; color:var(--ink-faint); text-decoration:none;
+  border-bottom:1px solid transparent; transition:color .18s,border-color .18s}
+.getapp-home:hover{color:var(--ink); border-color:var(--line-bold)}
+
 /* ── 법적 문서 페이지 (개인정보·약관) ── */
 .doc{max-width:760px; margin:0 auto; padding:120px clamp(20px,5vw,40px) 80px}
 .doc-head{text-align:center; margin-bottom:56px}
