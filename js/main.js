@@ -537,11 +537,20 @@ addEventListener('scroll', () => {
 const nav = document.getElementById('nav');
 const navProgress = document.getElementById('navProgress');
 
-/* 언어 토글 — EN ↔ KO */
+/* 언어 토글 — EN ↔ KO (탭 제목·description 도 함께 스왑) */
+const PAGE_META = {
+  en: { t: 'Kyul 결 — A Korean Word Puzzle That Shapes the World',
+        d: "Link Korean letters to form words — and watch each word's meaning come true on the board. 12 worlds, 144 puzzles, painted in ink on hanji paper." },
+  ko: { t: '결 Kyul — 말로 세상을 빚는 한글 퍼즐',
+        d: '자모를 이어 단어를 만들면, 그 뜻대로 세상이 움직입니다. 한지 위에 수묵으로 그린 열두 세계, 백사십사 개의 마당.' },
+};
 const langToggle = document.getElementById('langToggle');
 function setLang(lang) {
   document.documentElement.dataset.lang = lang;
   document.documentElement.lang = lang;
+  document.title = PAGE_META[lang].t;
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute('content', PAGE_META[lang].d);
   try { localStorage.setItem('kyul-lang', lang); } catch (e) {}
 }
 setLang((() => {
