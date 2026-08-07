@@ -11,6 +11,7 @@ export default function middleware(req) {
   const acceptKo = /^\s*ko/i.test(req.headers.get('accept-language') || '');
   const ko = hl ? hl === 'ko' : (country === 'KR' || acceptKo);
   if (!ko) return;
-  url.pathname = url.pathname === '/' ? '/index.ko.html' : `${url.pathname}.ko.html`;
+  /* cleanUrls 라서 .html 내부 경로는 404 — 클린 URL(/index.ko, /kyul.ko)로 리라이트 */
+  url.pathname = url.pathname === '/' ? '/index.ko' : `${url.pathname}.ko`;
   return new Response(null, { headers: { 'x-middleware-rewrite': url.toString() } });
 }
